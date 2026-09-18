@@ -18,7 +18,7 @@ const strategyNames: Partial<Record<string, string>> = {
 const knownLimits = [
   "The synthetic learners follow the same four rules the model knows, so these numbers show the machinery works, not how accurate it is with real children.",
   "Free Ten and correct regrouping give the same answer when no regrouping is needed. GLITCH will not wake a boss until it has seen two problems where they disagree.",
-  "Explanation is checked by choosing ideas, not by reading free text. No language model is connected yet.",
+  "Finding new rules and reading written explanations use a language model when one is configured. That path has not been measured live yet, so none of the numbers above include it.",
 ];
 
 export default function EvalPage() {
