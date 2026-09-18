@@ -16,6 +16,11 @@ import { runRule } from "@/engine/rules/interpreter";
 import { useBoss } from "@/lib/use-boss";
 import { useRunStore } from "@/store/run-store";
 
+const columnWork = (top: number, bottom: number, result: number): string =>
+  top - bottom === result
+    ? `${String(top)} − ${String(bottom)} = ${String(result)}`
+    : `${String(bottom)} − ${String(top)} = ${String(result)}`;
+
 export default function BossPage() {
   const boss = useBoss();
   const prediction = useRunStore((state) => state.prediction);
@@ -83,7 +88,15 @@ export default function BossPage() {
                   {mirror.answer}
                 </p>
                 <p className="mt-2 text-small text-ink-soft">
-                  Ones become {mirror.onesTop}. Tens stay at {mirror.tensTop}.
+                  In the ones it did{" "}
+                  {columnWork(mirror.onesTop, evidence.problem.subtrahend % 10, mirror.onesResult)}.
+                  In the tens it did{" "}
+                  {columnWork(
+                    mirror.tensTop,
+                    Math.floor(evidence.problem.subtrahend / 10),
+                    mirror.tensResult,
+                  )}
+                  .
                 </p>
               </section>
             )}

@@ -87,7 +87,7 @@ export const ruleLibrary: RuleCard[] = [
     hint: "Always small from big",
     tone: "peach",
     glyph: "swap",
-    unlocked: false,
+    unlocked: true,
   },
   {
     id: "slip",

@@ -14,12 +14,15 @@ import { cx } from "@/lib/cx";
 import { journeyStages, ruleLibrary } from "@/lib/journey";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useRunStore } from "@/store/run-store";
+import { useBoss } from "@/lib/use-boss";
+import { MysteryBadge } from "@/components/app/mystery-badge";
 import { toneSurfaces } from "@/components/clay/tones";
 import { RuleArt, RuleChip } from "@/components/app/rule-glyph";
 
 const totalStages = journeyStages.length;
 
 export default function HomePage() {
+  const boss = useBoss();
   const hydrated = useHydrated();
   const completedStageIds = useRunStore((state) => state.completedStageIds);
   const done = hydrated ? completedStageIds.length : 0;
@@ -43,7 +46,7 @@ export default function HomePage() {
           {done >= totalStages
             ? "Run complete"
             : `Stage ${String(activeStage)} of ${String(totalStages)}`}{" "}
-          &middot; Free Ten
+          &middot; {boss === null ? "Mystery rule" : boss.card.name}
         </p>
         <div className="h-2.5 w-full overflow-hidden rounded-full bg-violet-600">
           <div
@@ -55,13 +58,17 @@ export default function HomePage() {
             }
           />
         </div>
-        <Image
-          src={bossIdle}
-          alt=""
-          width={60}
-          height={181}
-          className="absolute -right-1 -bottom-8"
-        />
+        {boss?.card.id === "free-ten" ? (
+          <Image
+            src={bossIdle}
+            alt=""
+            width={60}
+            height={181}
+            className="absolute -right-1 -bottom-8"
+          />
+        ) : (
+          <MysteryBadge className="absolute top-1/2 right-6 -translate-y-1/2" />
+        )}
       </section>
 
       <section className="mb-8">
@@ -99,12 +106,16 @@ export default function HomePage() {
           href="/run"
           className="clay-interactive flex items-center gap-3 rounded-md bg-surface p-3 shadow-clay-1 active:translate-y-px"
         >
-          <RuleChip name="stack" tone={toneSurfaces.mint} />
+          {boss === null ? (
+            <MysteryBadge />
+          ) : (
+            <RuleChip name={boss.card.glyph} tone={toneSurfaces[boss.card.tone]} />
+          )}
           <span className="flex-1">
-            <span className="block text-small font-bold text-ink">Free Ten</span>
-            <span className="block text-caption text-ink-muted">
-              Subtraction &middot; 52 &minus; 28
+            <span className="block text-small font-bold text-ink">
+              {boss === null ? "Mystery rule" : boss.card.name}
             </span>
+            <span className="block text-caption text-ink-muted">Two-digit subtraction</span>
           </span>
           <span className="font-mono text-caption text-ink-muted">
             {activeStage}/{totalStages}

@@ -7,11 +7,14 @@ import labBackdrop from "@/assets/clay/lab-backdrop.webp";
 import bossDefeated from "@/assets/clay/boss-free-ten-defeated.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import { AppShell } from "@/components/app/app-shell";
+import { MysteryBadge } from "@/components/app/mystery-badge";
 import { PrimaryCta } from "@/components/app/primary-cta";
+import { RuleArt } from "@/components/app/rule-glyph";
 import { StageRow } from "@/components/app/stage-row";
 import { ClayIcon, type ClayGlyph } from "@/components/clay/clay-icon";
 import { ClayTag } from "@/components/clay";
 import { journeyStages } from "@/lib/journey";
+import { useBoss } from "@/lib/use-boss";
 import { useHydrated } from "@/lib/use-hydrated";
 import { stageStatusFor, useRunStore } from "@/store/run-store";
 
@@ -22,6 +25,7 @@ const meta: { glyph: ClayGlyph; label: string }[] = [
 ];
 
 export default function RunPage() {
+  const boss = useBoss();
   const hydrated = useHydrated();
   const completedStageIds = useRunStore((state) => state.completedStageIds);
   const completed = hydrated ? completedStageIds : [];
@@ -43,14 +47,26 @@ export default function RunPage() {
           className="object-cover object-bottom"
           priority
         />
-        <Image
-          src={defeated ? bossDefeated : bossIdle}
-          alt="The Free Ten boss, holding its rod so it cannot come apart"
-          width={defeated ? 113 : 73}
-          height={220}
-          className="absolute bottom-2 left-1/2 -translate-x-1/2"
-          priority
-        />
+        {boss === null ? (
+          <MysteryBadge size="lg" className="absolute bottom-16 left-1/2 -translate-x-1/2" />
+        ) : boss.card.id === "free-ten" ? (
+          <Image
+            src={defeated ? bossDefeated : bossIdle}
+            alt={
+              defeated ? "The Free Ten boss, broken" : "The Free Ten boss, holding its rod together"
+            }
+            width={defeated ? 113 : 73}
+            height={220}
+            className="absolute bottom-2 left-1/2 -translate-x-1/2"
+            priority
+          />
+        ) : (
+          <RuleArt
+            name={boss.card.glyph}
+            size="lg"
+            className="absolute bottom-14 left-1/2 -translate-x-1/2"
+          />
+        )}
         <Link
           href="/"
           aria-label="Back to home"
@@ -64,7 +80,9 @@ export default function RunPage() {
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <p className="text-small font-bold text-mint-700">Subtraction</p>
-            <h1 className="mt-1 text-h1 text-ink">Free Ten</h1>
+            <h1 className="mt-1 text-h1 text-ink">
+              {boss === null ? "Mystery rule" : boss.card.name}
+            </h1>
           </div>
           <ClayTag tone={defeated ? "mint" : "peach"}>
             {defeated
@@ -74,8 +92,9 @@ export default function RunPage() {
         </div>
 
         <p className="mb-5 text-small text-ink-soft">
-          Something takes ten ones across but never pays for them. Find out what, then prove it
-          wrong.
+          {boss === null
+            ? "There may be a rule hiding in how you subtract. GLITCH will find it, then you prove it wrong."
+            : `${boss.card.hint}. Now prove it wrong.`}
         </p>
 
         <ul className="mb-8 flex gap-2">
