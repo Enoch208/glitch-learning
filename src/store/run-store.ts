@@ -1,28 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { SubtractionProblem } from "@/engine/math/truth";
+import type {
+  ExplanationRecord,
+  ForgeRecord,
+  PredictionRecord,
+  TransferRecord,
+} from "@/engine/game/evidence";
+import { completeStage } from "@/engine/game/machine";
 import type { ReasoningTrace } from "@/events/trace";
 import { journeyStages, type StageStatus } from "@/lib/journey";
-
-export type PredictionRecord = {
-  problem: SubtractionProblem;
-  predicted: number;
-  bossAnswer: number;
-};
-export type ForgeRecord = {
-  problem: SubtractionProblem;
-  truthAnswer: number;
-  glitchAnswer: number;
-  attempts: number;
-};
-export type ExplanationRecord = {
-  selected: string[];
-  missing: string[];
-  coverage: number;
-  contradiction: boolean;
-  followUpUsed: boolean;
-};
-export type TransferRecord = { problem: SubtractionProblem; answer: number; passed: boolean };
 
 type RunData = {
   completedStageIds: string[];
@@ -57,7 +43,7 @@ const freshRun: RunData = {
 
 export const useRunStore = create<RunState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...freshRun,
       recordTrace: (trace) => {
         set((state) => ({ traces: [...state.traces, trace] }));
@@ -75,12 +61,12 @@ export const useRunStore = create<RunState>()(
         set((state) => ({ transfers: [...state.transfers, transfer] }));
       },
       completeStages: (ids) => {
-        set((state) => ({
-          completedStageIds: [
-            ...state.completedStageIds,
-            ...ids.filter((id) => !state.completedStageIds.includes(id)),
-          ],
-        }));
+        const state = get();
+        const completed = ids.reduce((current, id) => {
+          const transition = completeStage(current, id, state);
+          return transition.ok ? transition.completed : current;
+        }, state.completedStageIds);
+        set({ completedStageIds: completed });
       },
       resetRun: () => {
         set((state) => ({ ...freshRun, soundOn: state.soundOn }));

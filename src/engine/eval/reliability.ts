@@ -3,6 +3,7 @@ import { solveByColumns } from "@/engine/math/truth";
 import { parseRule } from "@/engine/rules/ast";
 import { runRule } from "@/engine/rules/interpreter";
 import { correctRule, flipFlopRule, freeTenRule } from "@/engine/rules/known-rules";
+import { fuzzStageMachine } from "./stage-fuzz";
 
 const top = { op: "var", name: "topOnes" };
 const valid = {
@@ -50,6 +51,10 @@ export type ReliabilityReport = {
   invalidProgramsAccepted: number;
   counterexamplesChecked: number;
   falseCounterexamples: number;
+  stageAttempts: number;
+  stageTransitionsAccepted: number;
+  stageViolationsAccepted: number;
+  stageRunsReachingTransfer: number;
 };
 
 export function measureReliability(): ReliabilityReport {
@@ -82,6 +87,7 @@ export function measureReliability(): ReliabilityReport {
     invalidProgramsTried: malformedPrograms.length,
     invalidProgramsAccepted: malformedPrograms.filter((program) => parseRule(program).ok).length,
     counterexamplesChecked: counterexamples.length,
+    ...fuzzStageMachine(2026, 3000, 20),
     falseCounterexamples: counterexamples.filter(
       ({ rule, problem }) => runRule(rule, problem).answer === solveByColumns(problem).answer,
     ).length,

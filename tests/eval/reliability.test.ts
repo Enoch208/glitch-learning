@@ -18,6 +18,17 @@ describe("reliability counters", () => {
       invalidProgramsAccepted: 0,
       falseCounterexamples: 0,
       correctRuleDisagreements: 0,
+      stageViolationsAccepted: 0,
     });
+  });
+
+  test("the fuzz reaches the last stage on some runs", () => {
+    expect(report.stageRunsReachingTransfer).toBeGreaterThan(0);
+  });
+
+  test("the stage machine was actually exercised, including rejected attempts", () => {
+    expect(report.stageAttempts).toBeGreaterThan(1000);
+    expect(report.stageTransitionsAccepted).toBeGreaterThan(0);
+    expect(report.stageTransitionsAccepted).toBeLessThan(report.stageAttempts);
   });
 });

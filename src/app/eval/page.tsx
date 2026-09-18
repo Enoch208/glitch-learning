@@ -19,7 +19,6 @@ const knownLimits = [
   "The synthetic learners follow the same four rules the model knows, so these numbers show the machinery works, not how accurate it is with real children.",
   "Free Ten and correct regrouping give the same answer when no regrouping is needed. GLITCH will not wake a boss until it has seen two problems where they disagree.",
   "Explanation is checked by choosing ideas, not by reading free text. No language model is connected yet.",
-  "Stage order is enforced but not yet counted as a reliability measurement.",
 ];
 
 export default function EvalPage() {
@@ -80,6 +79,11 @@ export default function EvalPage() {
           label="False counterexamples"
           value={String(reliability.falseCounterexamples)}
           note={`${String(reliability.counterexamplesChecked)} counterexamples checked`}
+        />
+        <Reading
+          label="Stage order violations accepted"
+          value={String(reliability.stageViolationsAccepted)}
+          note={`${String(reliability.stageAttempts)} random completion attempts, checked independently`}
         />
       </InstrumentSection>
 

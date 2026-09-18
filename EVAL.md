@@ -35,12 +35,15 @@ Everything here is produced by `pnpm eval`, which writes `evals/results/diagnosi
 
 ## Reliability
 
-| Check                            | Result          | Checked              |
-| -------------------------------- | --------------- | -------------------- |
-| Arithmetic truth failures        | 0               | 4995 problems        |
-| Rule language vs truth engine    | 0 disagreements | 4995 problems        |
-| Malformed rule programs accepted | 0               | 15 programs          |
-| False counterexamples            | 0               | 3240 counterexamples |
+| Check                            | Result          | Checked                                                                          |
+| -------------------------------- | --------------- | -------------------------------------------------------------------------------- |
+| Arithmetic truth failures        | 0               | 4995 problems                                                                    |
+| Rule language vs truth engine    | 0 disagreements | 4995 problems                                                                    |
+| Malformed rule programs accepted | 0               | 15 programs                                                                      |
+| False counterexamples            | 0               | 3240 counterexamples                                                             |
+| Stage order violations accepted  | 0               | 60000 random completion attempts, 5883 accepted, 17 runs reaching the last stage |
+
+Stage transitions are checked by a checker that does not share the machine's guards: every accepted transition must leave the completed stages in order and backed by the evidence that stage needs. Weakening the guard on any one of three stages makes this counter non-zero, which is how it was confirmed to detect violations.
 
 ## Latency
 
