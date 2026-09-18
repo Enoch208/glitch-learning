@@ -70,7 +70,7 @@ export default function HomePage() {
           {ruleLibrary.map((rule) => (
             <li key={rule.id}>
               <Link
-                href={rule.unlocked ? "/lab" : "/rules"}
+                href={rule.unlocked ? "/run" : "/rules"}
                 className={cx(
                   "clay-interactive relative flex h-32 flex-col items-center justify-center gap-2 rounded-xl p-3 shadow-clay-1 active:translate-y-px",
                   toneSurfaces[rule.tone],
@@ -96,7 +96,7 @@ export default function HomePage() {
       <section>
         <SectionHeading title="Continue" />
         <Link
-          href="/lab"
+          href="/run"
           className="clay-interactive flex items-center gap-3 rounded-md bg-surface p-3 shadow-clay-1 active:translate-y-px"
         >
           <RuleChip name="stack" tone={toneSurfaces.mint} />

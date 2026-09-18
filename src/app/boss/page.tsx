@@ -51,8 +51,8 @@ export default function BossPage() {
           </div>
         )}
         <Link
-          href="/lab"
-          aria-label="Back to the lab"
+          href="/run"
+          aria-label="Back to the run"
           className="clay-interactive absolute top-5 left-5 flex size-11 items-center justify-center rounded-md bg-surface text-ink shadow-clay-1 active:translate-y-px"
         >
           <ClayIcon glyph={ArrowLeftIcon} size="md" weight="bold" />

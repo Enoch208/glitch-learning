@@ -48,8 +48,8 @@ export default function PlayPage() {
     <AppShell className="px-5 pt-6">
       <header className="mb-6 flex items-center gap-3">
         <Link
-          href="/lab"
-          aria-label="Back to the lab"
+          href="/run"
+          aria-label="Back to the run"
           className="clay-interactive flex size-11 shrink-0 items-center justify-center rounded-md bg-surface text-ink shadow-clay-1 active:translate-y-px"
         >
           <ClayIcon glyph={ArrowLeftIcon} size="md" weight="bold" />

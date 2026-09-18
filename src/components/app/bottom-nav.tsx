@@ -8,7 +8,7 @@ import { cx } from "@/lib/cx";
 
 const items: { href: string; label: string; glyph: ClayGlyph }[] = [
   { href: "/", label: "Home", glyph: HouseIcon },
-  { href: "/lab", label: "Lab", glyph: FlaskIcon },
+  { href: "/run", label: "Run", glyph: FlaskIcon },
   { href: "/progress", label: "Progress", glyph: ChartBarIcon },
   { href: "/profile", label: "Profile", glyph: UserIcon },
 ];

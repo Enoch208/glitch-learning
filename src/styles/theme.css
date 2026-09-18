@@ -189,6 +189,27 @@
     cursor: pointer;
   }
 
+  progress {
+    appearance: none;
+    border: 0;
+    background-color: var(--color-violet-50);
+  }
+
+  progress::-webkit-progress-bar {
+    background-color: var(--color-violet-50);
+    border-radius: 9999px;
+  }
+
+  progress::-webkit-progress-value {
+    background-color: var(--color-violet-500);
+    border-radius: 9999px;
+  }
+
+  progress::-moz-progress-bar {
+    background-color: var(--color-violet-500);
+    border-radius: 9999px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

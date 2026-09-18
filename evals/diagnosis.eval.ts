@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { evaluateStrategies } from "@/engine/eval/diagnose";
+import { measureReliability } from "@/engine/eval/reliability";
 import { selectNextProblem } from "@/engine/learner/diagnostic";
 import { uniformPrior } from "@/engine/learner/posterior";
 import { createRandom } from "@/engine/learner/random";
@@ -28,6 +29,7 @@ test("diagnosis against baselines on seeded synthetic learners", () => {
     generatedAt: new Date().toISOString(),
     options,
     reports,
+    reliability: measureReliability(),
     diagnosticSelectionMs: {
       p50: Number(percentile(timings, 0.5).toFixed(3)),
       p95: Number(percentile(timings, 0.95).toFixed(3)),
