@@ -17,7 +17,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="pb-safe fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-sm px-3">
+    <div className="pb-safe sticky bottom-0 z-20 mt-6 w-full px-3">
       <nav className="rounded-xl bg-surface px-1 py-1.5 shadow-clay-3">
         <ul className="flex items-stretch">
           {items.map((item) => {
