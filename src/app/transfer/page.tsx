@@ -6,6 +6,7 @@ import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
 import { StageHeader } from "@/components/app/stage-header";
 import { SubtractionCanvas } from "@/components/canvas/subtraction-canvas";
+import { BossCrack } from "@/components/forge/boss-crack";
 import { transferPassed, transferProblem } from "@/engine/game/transfer";
 import { solveByColumns } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
@@ -63,20 +64,41 @@ export default function TransferPage() {
       <StageHeader title="Prove it" stage={7} />
 
       {status === "working" ? (
-        <section className="rounded-xl bg-surface p-5 shadow-clay-2">
-          <SubtractionCanvas
-            key={`${String(problem.minuend)}-${String(problem.subtrahend)}`}
-            problem={problem}
-            onComplete={finish}
-          />
-        </section>
+        <>
+          <section className="rounded-xl bg-violet-50 p-4 text-center">
+            <p className="text-caption font-bold tracking-widest text-violet-600 uppercase">
+              {attempt === 1 ? "Final round" : "One more try"}
+            </p>
+            <p className="mt-1 text-body font-bold text-ink">
+              One last problem. No boss. No hints.
+            </p>
+          </section>
+          <section className="rounded-xl bg-surface p-5 shadow-clay-2">
+            <SubtractionCanvas
+              key={`${String(problem.minuend)}-${String(problem.subtrahend)}`}
+              problem={problem}
+              onComplete={finish}
+            />
+          </section>
+        </>
       ) : status === "passed" ? (
         <>
-          <section className="rounded-xl bg-mint-100 p-5 text-center">
-            <p className="text-h2 text-mint-700">{steps.answer}. You fixed the glitch.</p>
-            <p className="mt-1 text-small text-ink-soft">
-              No boss, no hints, and the rule never came back.
-            </p>
+          <section
+            className="flex items-center gap-4 rounded-xl bg-mint-100 p-5"
+            aria-live="polite"
+          >
+            <div className="opacity-50">
+              <BossCrack id={boss.card.id} glyph={boss.card.glyph} cracked />
+            </div>
+            <div className="flex-1">
+              <p className="text-caption font-bold tracking-widest text-mint-700 uppercase">
+                {problem.minuend} &minus; {problem.subtrahend} = {steps.answer}
+              </p>
+              <p className="mt-1 text-h2 text-mint-700">You fixed the glitch.</p>
+              <p className="mt-1 text-small text-ink-soft">
+                You found the bad rule, broke it, and solved a new one without it.
+              </p>
+            </div>
           </section>
           <PrimaryCta href="/victory">Finish the fight</PrimaryCta>
         </>
