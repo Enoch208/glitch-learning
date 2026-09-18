@@ -1,68 +1,174 @@
+<div align="center">
+
 # GLITCH
 
 **Your mistake becomes the boss.**
 
-Most learning software tells a learner that they are wrong. GLITCH works out the rule that made the wrong answer look right, turns that rule into an opponent, and lets the learner win only by proving the rule wrong.
+A math game that works out the rule behind a child's wrong answers, turns that rule into an opponent, and lets them win only by proving it wrong.
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Vitest](https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white)
+
+![A run in GLITCH: the home screen, working a problem, the boss reveal and breaking the rule in the Forge](docs/screenshots/run.webp)
+
+</div>
+
+## Contents
+
+- [About](#about)
+- [Features](#features)
+- [How a run works](#how-a-run-works)
+- [Screenshots](#screenshots)
+- [Evaluation](#evaluation)
+- [Tech stack](#tech-stack)
+- [Getting started](#getting-started)
+- [Scripts](#scripts)
+- [Project structure](#project-structure)
+- [Documentation](#documentation)
+
+## About
+
+Most learning software tells a learner that they are wrong. GLITCH asks a different question: _what rule would make this wrong answer look right?_
+
+A child who answers 52 − 28 = 34 is not guessing. They borrowed a ten to make 12 ones and never took it from the tens. GLITCH watches every step, works out which rule explains them, and turns that rule into a boss called Free Ten. The child predicts what the boss will say, builds a problem it gets wrong, explains why it broke, and then solves a new problem on their own. Only then is the rule defeated.
 
 The first domain is two-digit subtraction with regrouping, for learners aged 8 to 11.
 
-## Why it is different
+## Features
 
-- **It watches how, not just what.** Every step on the math canvas is recorded: whether a ten was borrowed, whether the tens were reduced, what went in each column.
-- **A wrong answer is a hypothesis.** GLITCH holds several candidate rules at once and picks the next problem that best tells them apart, instead of the next problem to practise.
-- **The rule becomes the boss.** Once the evidence is strong enough, the learner meets their own rule as a character, sees it copy their work, and predicts what it will do next.
-- **Winning takes proof.** The learner builds a problem the boss gets wrong, explains why it broke, and then solves an unseen problem alone. Finishing screens is not enough.
-- **No model decides what is true.** Arithmetic, rule execution, counterexample checking and the victory condition are all deterministic code.
+- **Watches steps, not just answers.** Every borrow, rewritten digit and column answer is recorded.
+- **Treats a wrong answer as a hypothesis.** It holds several candidate rules at once and asks the problem that best tells them apart.
+- **Turns the rule into a boss.** The boss copies the learner's own work, and the learner predicts its next answer.
+- **Makes winning take proof.** A counterexample, an explanation and an unseen problem solved alone.
+- **Finds rules nobody wrote down.** When the known rules don't fit, Claude proposes new ones in a closed rule language, and a rule becomes a boss only if deterministic code confirms it.
+- **Never lets a model decide what is true.** Arithmetic, rule execution, counterexamples and the victory condition are all deterministic.
+- **Hands off to a tutor.** Every run ends with notes built from recorded evidence.
+- **Built for children.** No chat, no ads, no accounts, no correctness shown mid-diagnosis, WCAG AA contrast, full keyboard use, reduced motion and a mute button on every screen.
 
-## How a run goes
+## How a run works
 
-1. **Encounter.** The learner works a subtraction problem on the canvas.
-2. **Observation.** GLITCH records each step, not only the answer.
-3. **Diagnostic.** Follow-up problems are chosen by expected information gain over the candidate rules.
-4. **Boss.** A misconception that clears the confidence gate becomes the boss, copies the learner's work, and is predicted by them.
-5. **Forge.** The learner builds a problem, digit by digit, that the boss gets wrong.
-6. **Explain.** The learner picks the ideas that explain why the boss broke.
-7. **Transfer.** The learner solves a new problem the rule would still get wrong.
+| Stage          | What happens                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| 1. Encounter   | The learner works a subtraction problem, step by step.                                               |
+| 2. Observation | GLITCH records each step, not only the answer.                                                       |
+| 3. Diagnostic  | Follow-up problems are chosen by expected information gain over the candidate rules.                 |
+| 4. Boss        | A rule that clears the evidence gate becomes the boss, copies the learner, and is predicted by them. |
+| 5. Forge       | The learner builds a problem, digit by digit, that the boss gets wrong.                              |
+| 6. Explain     | The learner says why the boss broke, in their own words or by choosing ideas.                        |
+| 7. Transfer    | The learner solves a new problem the rule would still get wrong.                                     |
 
-A learner who regroups correctly throughout gets no boss: GLITCH says there is no rule to break.
+A learner who regroups correctly throughout never gets a boss.
 
-## Evidence
+## Screenshots
+
+![Victory with notes for the next tutor, the lab inspector showing model confidence, and the evaluation page](docs/screenshots/evidence.webp)
+
+`/judges` starts a guided run. `/lab` shows what the model believes during a session. `/eval` shows the measurements below.
+
+## Evaluation
 
 500 seeded synthetic learners, a quarter following each candidate rule, each allowed up to 6 questions. Every strategy faced the same learners.
 
-| Strategy               | Right outcome | Wrong boss | of which false accusations | Missed misconception | Median questions to boss |
-| ---------------------- | ------------- | ---------- | -------------------------- | -------------------- | ------------------------ |
-| GLITCH                 | 500           | 0          | 0                          | 0                    | 2                        |
-| Random next question   | 442           | 1          | 1                          | 57                   | 4                        |
-| Wrong-answer lookup    | 420           | 0          | 0                          | 80                   | 4                        |
-| Answers only, no steps | 498           | 2          | 2                          | 0                    | 2                        |
+| Strategy               | Right outcome | Wrong boss | Missed misconception | Median questions to boss |
+| ---------------------- | ------------- | ---------- | -------------------- | ------------------------ |
+| **GLITCH**             | 500 / 500     | 0          | 0                    | 2                        |
+| Random next question   | 442 / 500     | 1          | 57                   | 4                        |
+| Wrong-answer lookup    | 420 / 500     | 0          | 80                   | 4                        |
+| Answers only, no steps | 498 / 500     | 2          | 0                    | 2                        |
 
-These learners follow the same rules the model knows, so this shows the machinery works. It does not measure accuracy with real children. More in [EVAL.md](EVAL.md).
+These learners follow the rules the model already knows, so the scores show the machinery works, not accuracy with real children. Details in [EVAL.md](EVAL.md).
 
-Reliability, measured by `pnpm eval`: 0 arithmetic failures across 4995 problems, 0 of 15 malformed rule programs accepted, 0 false counterexamples out of 3240 checked. Choosing the next question takes 0.029 ms at the 95th percentile.
+| Reliability check                | Result                  |
+| -------------------------------- | ----------------------- |
+| Arithmetic failures              | 0 across 4995 problems  |
+| Malformed rule programs accepted | 0 of 15                 |
+| False counterexamples            | 0 of 3240               |
+| Stage order violations           | 0 across 60000 attempts |
+| Choosing the next question       | 0.03 ms at P95          |
 
-## Architecture
+## Tech stack
 
-A rule is a small program in a closed language that the interpreter owns. Diagnosis is a posterior over rules plus information-gain question selection. The counterexample search serves the Forge, its hints and the transfer problem. See [ARCHITECTURE.md](ARCHITECTURE.md).
+| Area       | Choice                                             |
+| ---------- | -------------------------------------------------- |
+| Framework  | Next.js 16 (App Router), React 19                  |
+| Language   | TypeScript 5.9, strict                             |
+| Styling    | Tailwind CSS 4 with a token system                 |
+| State      | Zustand, persisted on the device                   |
+| Validation | Zod                                                |
+| Model      | Claude through the Anthropic SDK, server side only |
+| Testing    | Vitest                                             |
 
-## Limitations
+## Getting started
 
-See [KNOWN_LIMITS.md](KNOWN_LIMITS.md). The most important: nothing has been tested with real learners, and the model path has not yet been measured live.
+### Prerequisites
 
-## Run locally
+- Node.js 24
+- pnpm 10
 
-Requires Node 24 and pnpm 10.
+### Install and run
 
-```
+```bash
+git clone https://github.com/Enoch208/glitch-learning.git
+cd glitch-learning
 pnpm install
-pnpm dev          # http://localhost:3000, best at phone width
-pnpm test         # unit tests
-pnpm eval         # regenerate evals/results/diagnosis.json
-pnpm eval:model   # live model check, needs ANTHROPIC_API_KEY in .env.local
+pnpm dev
 ```
 
-The app runs fully without a key. Adding `ANTHROPIC_API_KEY` to `.env.local` lets Claude propose rules the library does not contain and read written explanations.
+Open [http://localhost:3000](http://localhost:3000). The app is designed for phone width.
 
-`/judges` starts a guided run. `/lab` shows the model's view of the current session. `/eval` shows the measurements above.
+### Environment variables
 
-Also: [SAFETY.md](SAFETY.md), [DISCLOSURES.md](DISCLOSURES.md), [THIRD_PARTY.md](THIRD_PARTY.md).
+The app runs fully without any configuration. To let Claude propose new rules and read written explanations, create `.env.local`:
+
+```bash
+ANTHROPIC_API_KEY=your-key
+```
+
+The key is read on the server only and never sent to the browser.
+
+## Scripts
+
+| Command                 | Description                                           |
+| ----------------------- | ----------------------------------------------------- |
+| `pnpm dev`              | Start the development server                          |
+| `pnpm build`            | Build for production                                  |
+| `pnpm start`            | Serve the production build                            |
+| `pnpm test`             | Run the unit tests                                    |
+| `pnpm test <path>`      | Run one test file or folder                           |
+| `pnpm test -t "<name>"` | Run tests whose name matches                          |
+| `pnpm eval`             | Regenerate `evals/results/diagnosis.json`             |
+| `pnpm eval:model`       | Check the live model path (needs `ANTHROPIC_API_KEY`) |
+| `pnpm lint`             | Lint, including the no-comments rule                  |
+| `pnpm typecheck`        | Type-check                                            |
+| `pnpm format`           | Format with Prettier                                  |
+
+## Project structure
+
+```
+src/
+  app/            screens and the two API routes
+  ai/             Claude calls, server side only
+  components/     app shell, canvas, clay primitives
+  events/         trace schema shared by canvas and engine
+  engine/
+    math/         truth engine for column subtraction
+    rules/        rule language, interpreter, known rules, induction
+    learner/      posterior, information gain, synthetic learners
+    counterexample/  search and Forge evaluation
+    game/         session, stage machine, transfer, tutor handoff
+    eval/         baselines, reliability checks
+  store/          run state
+evals/            evaluation entry points and results
+tests/            unit tests mirroring the engine
+```
+
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md): the engine, the rule language and the model boundary
+- [EVAL.md](EVAL.md): how the evaluation is run and how to read it
+- [KNOWN_LIMITS.md](KNOWN_LIMITS.md): what GLITCH does not do yet
+- [SAFETY.md](SAFETY.md): design choices that protect children
+- [THIRD_PARTY.md](THIRD_PARTY.md): dependencies and their licences
