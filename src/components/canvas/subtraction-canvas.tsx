@@ -7,6 +7,7 @@ import { createTraceRecorder } from "@/engine/trace/recorder";
 import type { SubtractionProblem } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
 import { cx } from "@/lib/cx";
+import { PlaceValueTray } from "./place-value-tray";
 import { useCue } from "@/lib/sound/use-cue";
 
 type Step = "look" | "setup" | "answer" | "done";
@@ -200,6 +201,14 @@ export function SubtractionCanvas({
           {stepNumber}/{steps.length}
         </span>
       </div>
+
+      <PlaceValueTray
+        tens={topTens}
+        ones={topOnes}
+        startOnes={startOnes}
+        tenBroken={tookOneTen}
+        className="mt-4"
+      />
 
       <div className="my-5 flex flex-col items-center gap-1">
         <div className="flex items-end gap-3">
