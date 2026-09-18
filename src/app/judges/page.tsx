@@ -4,11 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
 import { InstrumentSection } from "@/components/app/instrument";
+import { HOOK_MARKS, HookOpener } from "@/components/judges/hook-opener";
+import { useTimeline } from "@/lib/use-timeline";
 import { useRunStore } from "@/store/run-store";
 
 export default function JudgesPage() {
   const router = useRouter();
   const startGuidedCase = useRunStore((state) => state.startGuidedCase);
+  const beat = useTimeline(true, HOOK_MARKS);
 
   const start = () => {
     startGuidedCase();
@@ -21,12 +24,15 @@ export default function JudgesPage() {
         <p className="font-mono text-caption tracking-widest text-violet-500 uppercase">
           90 second guided case
         </p>
-        <h1 className="mt-2 text-h1 text-ink">Your mistake becomes the boss</h1>
-        <p className="mt-3 text-small text-ink-soft">
-          A learner has a consistent subtraction misconception. Play through their reasoning and see
-          whether GLITCH can uncover it, turn it into a boss, and let the learner beat it.
-        </p>
+        <h1 className="mt-2 text-h1 text-ink">A wrong answer has a rule inside it</h1>
       </header>
+
+      <HookOpener beat={beat} />
+
+      <p className="text-small text-ink-soft">
+        Play one learner&rsquo;s reasoning. GLITCH finds the rule, turns it into a boss, and the
+        learner breaks it with their own counterexample.
+      </p>
 
       <button
         type="button"
@@ -40,6 +46,13 @@ export default function JudgesPage() {
         <p className="text-small text-ink-soft">
           Regroup correctly throughout and no boss appears. Take the smaller digit from the bigger
           in each column and a different rule wakes up. The same engine decides every time.
+        </p>
+      </InstrumentSection>
+
+      <InstrumentSection title="AI where language is fuzzy. Code where math must be true.">
+        <p className="text-small text-ink-soft">
+          The model proposes rules as small programs and reads the learner&rsquo;s explanation.
+          Deterministic code runs every rule, checks every counterexample and decides every win.
         </p>
       </InstrumentSection>
 
