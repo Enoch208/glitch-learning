@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon, ClockIcon, SkullIcon, StackIcon } from "@phosphor-icons/react/dist/ssr";
@@ -9,6 +11,8 @@ import { StageRow } from "@/components/app/stage-row";
 import { ClayIcon, type ClayGlyph } from "@/components/clay/clay-icon";
 import { ClayTag } from "@/components/clay";
 import { journeyStages } from "@/lib/journey";
+import { useHydrated } from "@/lib/use-hydrated";
+import { stageStatusFor, useRunStore } from "@/store/run-store";
 
 const meta: { glyph: ClayGlyph; label: string }[] = [
   { glyph: StackIcon, label: "7 stages" },
@@ -17,6 +21,15 @@ const meta: { glyph: ClayGlyph; label: string }[] = [
 ];
 
 export default function LabPage() {
+  const hydrated = useHydrated();
+  const completedStageIds = useRunStore((state) => state.completedStageIds);
+  const completed = hydrated ? completedStageIds : [];
+  const stages = journeyStages.map((stage) => ({
+    ...stage,
+    status: stageStatusFor(stage.id, completed),
+  }));
+  const nextStage = stages.find((stage) => stage.status === "active");
+
   return (
     <AppShell>
       <div className="relative h-72 overflow-hidden bg-sky-100">
@@ -51,7 +64,7 @@ export default function LabPage() {
             <p className="text-small font-bold text-mint-700">Subtraction</p>
             <h1 className="mt-1 text-h1 text-ink">Free Ten</h1>
           </div>
-          <ClayTag tone="peach">Stage 1</ClayTag>
+          <ClayTag tone="peach">Stage {Math.min(completed.length + 1, stages.length)}</ClayTag>
         </div>
 
         <p className="mb-5 text-small text-ink-soft">
@@ -73,14 +86,24 @@ export default function LabPage() {
 
         <h2 className="mb-3 text-body font-bold text-ink">Stages</h2>
         <ul className="mb-8 space-y-2">
-          {journeyStages.map((stage) => (
+          {stages.map((stage) => (
             <li key={stage.id}>
               <StageRow stage={stage} />
             </li>
           ))}
         </ul>
 
-        <PrimaryCta href="/play">Start Encounter</PrimaryCta>
+        {nextStage?.href === undefined ? (
+          <p className="rounded-full bg-surface py-4 text-center text-small font-bold text-ink-muted shadow-clay-1">
+            {nextStage === undefined
+              ? "Every stage finished."
+              : `${nextStage.title} is not built yet.`}
+          </p>
+        ) : (
+          <PrimaryCta href={nextStage.href}>
+            {completed.length > 0 ? "Continue" : "Start Encounter"}
+          </PrimaryCta>
+        )}
       </div>
     </AppShell>
   );

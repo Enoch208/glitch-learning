@@ -2,23 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FlaskIcon, HouseIcon, ListChecksIcon } from "@phosphor-icons/react/dist/ssr";
+import { ChartBarIcon, FlaskIcon, HouseIcon, UserIcon } from "@phosphor-icons/react/dist/ssr";
 import { ClayIcon, type ClayGlyph } from "@/components/clay/clay-icon";
 import { cx } from "@/lib/cx";
 
 const items: { href: string; label: string; glyph: ClayGlyph }[] = [
   { href: "/", label: "Home", glyph: HouseIcon },
   { href: "/lab", label: "Lab", glyph: FlaskIcon },
-  { href: "/rules", label: "Rules", glyph: ListChecksIcon },
+  { href: "/progress", label: "Progress", glyph: ChartBarIcon },
+  { href: "/profile", label: "Profile", glyph: UserIcon },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="pb-safe fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-sm px-4">
-      <nav className="rounded-2xl bg-surface p-2 shadow-clay-3">
-        <ul className="flex items-stretch justify-around">
+    <div className="pb-safe fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-sm px-3">
+      <nav className="rounded-xl bg-surface px-1 py-1.5 shadow-clay-3">
+        <ul className="flex items-stretch">
           {items.map((item) => {
             const active = pathname === item.href;
 
@@ -32,8 +33,10 @@ export function BottomNav() {
                     active ? "text-violet-500" : "text-ink-muted",
                   )}
                 >
-                  <ClayIcon glyph={item.glyph} size="md" weight={active ? "fill" : "regular"} />
-                  <span className="text-caption font-bold">{item.label}</span>
+                  <ClayIcon glyph={item.glyph} size="nav" weight={active ? "fill" : "regular"} />
+                  <span className={cx("text-caption", active ? "font-bold" : "font-medium")}>
+                    {item.label}
+                  </span>
                 </Link>
               </li>
             );

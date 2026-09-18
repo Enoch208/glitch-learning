@@ -5,6 +5,7 @@ export type ClayGlyph = Icon;
 const glyphSizes = {
   sm: 18,
   md: 22,
+  nav: 26,
   lg: 28,
   xl: 36,
 } as const;

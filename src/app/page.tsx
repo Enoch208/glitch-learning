@@ -1,3 +1,5 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,13 +12,19 @@ import { ClayIcon } from "@/components/clay/clay-icon";
 
 import { cx } from "@/lib/cx";
 import { journeyStages, ruleLibrary } from "@/lib/journey";
+import { useHydrated } from "@/lib/use-hydrated";
+import { useRunStore } from "@/store/run-store";
 import { toneSurfaces } from "@/components/clay/tones";
 import { RuleArt, RuleChip } from "@/components/app/rule-glyph";
 
 const totalStages = journeyStages.length;
-const activeStage = journeyStages.findIndex((stage) => stage.status === "active") + 1;
 
 export default function HomePage() {
+  const hydrated = useHydrated();
+  const completedStageIds = useRunStore((state) => state.completedStageIds);
+  const done = hydrated ? completedStageIds.length : 0;
+  const activeStage = Math.min(done + 1, totalStages);
+
   return (
     <AppShell className="px-5 pt-8">
       <header className="mb-6 flex items-center gap-3">

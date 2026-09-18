@@ -11,6 +11,8 @@ import { solveByColumns } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
 import { cx } from "@/lib/cx";
 import { journeyStages } from "@/lib/journey";
+import { useHydrated } from "@/lib/use-hydrated";
+import { useRunStore } from "@/store/run-store";
 
 const problem = { minuend: 52, subtrahend: 28 };
 
@@ -30,8 +32,17 @@ const describeEvent = (event: ReasoningTrace["events"][number]): string => {
 };
 
 export default function PlayPage() {
+  const hydrated = useHydrated();
   const [trace, setTrace] = useState<ReasoningTrace | null>(null);
+  const completeStage = useRunStore((state) => state.completeStage);
+  const completedStageIds = useRunStore((state) => state.completedStageIds);
   const truth = solveByColumns(problem);
+  const doneCount = hydrated ? completedStageIds.length : 0;
+
+  const recordRun = (finished: ReasoningTrace) => {
+    setTrace(finished);
+    completeStage("encounter", finished);
+  };
 
   return (
     <AppShell className="px-5 pt-6">
@@ -50,17 +61,26 @@ export default function PlayPage() {
                 key={stage.id}
                 className={cx(
                   "h-1.5 flex-1 rounded-full",
-                  index === 0 ? "bg-violet-500" : "bg-violet-100",
+                  index < doneCount
+                    ? "bg-mint-500"
+                    : index === doneCount
+                      ? "bg-violet-500"
+                      : "bg-violet-100",
                 )}
               />
             ))}
           </div>
-          <p className="mt-2 text-caption text-ink-muted">Stage 1 of {journeyStages.length}</p>
+          <p className="mt-2 text-caption text-ink-muted">
+            Stage {doneCount + 1} of {journeyStages.length}
+          </p>
         </div>
+        <span className="flex h-10 shrink-0 items-center rounded-full bg-surface px-3 font-mono text-caption font-bold text-ink-soft shadow-clay-1">
+          {doneCount}/{journeyStages.length}
+        </span>
       </header>
 
       <section className="mb-5 rounded-xl bg-surface p-5 shadow-clay-2">
-        <SubtractionCanvas problem={problem} onComplete={setTrace} />
+        <SubtractionCanvas problem={problem} onComplete={recordRun} />
       </section>
 
       <section className="rounded-xl bg-surface p-5 shadow-clay-1">

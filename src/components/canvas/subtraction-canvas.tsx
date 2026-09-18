@@ -53,10 +53,14 @@ function DigitCell({
 }
 
 function AdjustRow({
+  letter,
+  badgeTone,
   label,
   applied,
   onToggle,
 }: {
+  letter: string;
+  badgeTone: string;
   label: string;
   applied: boolean;
   onToggle: () => void;
@@ -67,19 +71,19 @@ function AdjustRow({
       onClick={onToggle}
       aria-pressed={applied}
       className={cx(
-        "clay-interactive flex h-14 w-full items-center gap-3 rounded-md px-4 text-left text-small font-bold shadow-clay-1 active:translate-y-px",
-        applied ? "bg-mint-100 text-mint-700" : "bg-surface text-ink-soft",
+        "clay-interactive flex min-h-16 w-full items-center gap-3 rounded-md px-3 text-left text-small font-bold shadow-clay-1 active:translate-y-px",
+        applied ? "bg-violet-50 text-violet-600 ring-2 ring-violet-300" : "bg-surface text-ink",
       )}
     >
       <span
         className={cx(
-          "flex size-6 shrink-0 items-center justify-center rounded-full",
-          applied ? "bg-mint-500 text-surface" : "ring-2 ring-violet-100",
+          "flex size-9 shrink-0 items-center justify-center rounded-full text-small font-bold",
+          applied ? "bg-violet-500 text-surface" : badgeTone,
         )}
       >
-        {applied ? <ClayIcon glyph={CheckIcon} size="sm" weight="bold" /> : null}
+        {applied ? <ClayIcon glyph={CheckIcon} size="sm" weight="bold" /> : letter}
       </span>
-      {label}
+      <span className="flex-1">{label}</span>
     </button>
   );
 }
@@ -213,11 +217,19 @@ export function SubtractionCanvas({
         <div>
           <div className="space-y-2">
             <AdjustRow
+              letter="A"
+              badgeTone="bg-mint-200 text-mint-700"
               label="Give the ones 10 more"
               applied={gaveTenOnes}
               onToggle={toggleTenOnes}
             />
-            <AdjustRow label="Take 1 from the tens" applied={tookOneTen} onToggle={toggleOneTen} />
+            <AdjustRow
+              letter="B"
+              badgeTone="bg-peach-100 text-peach-700"
+              label="Take 1 from the tens"
+              applied={tookOneTen}
+              onToggle={toggleOneTen}
+            />
           </div>
           <p className="mt-3 text-center text-caption text-ink-muted">
             Tap again to undo. You can skip both.
