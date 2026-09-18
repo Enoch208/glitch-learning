@@ -1,15 +1,16 @@
 "use client";
 
 import { AppShell } from "@/components/app/app-shell";
-import { RuleChip } from "@/components/app/rule-glyph";
+import { DiscoveryRow, InducedRow } from "@/components/app/discovery";
 import { ClayProgress, ClayTag } from "@/components/clay";
-import { toneSurfaces } from "@/components/clay/tones";
-import { journeyStages, ruleLibrary } from "@/lib/journey";
+import { journeyStages } from "@/lib/journey";
+import { useDiscovery } from "@/lib/use-discovery";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useRunStore } from "@/store/run-store";
 
 export default function ProgressPage() {
   const hydrated = useHydrated();
+  const discovery = useDiscovery();
   const completedStageIds = useRunStore((state) => state.completedStageIds);
   const traces = useRunStore((state) => state.traces);
   const lastTrace = hydrated ? (traces.at(-1) ?? null) : null;
@@ -59,19 +60,15 @@ export default function ProgressPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-body font-bold text-ink">Rules</h2>
+        <h2 className="mb-3 text-body font-bold text-ink">
+          Rules discovered {discovery.found} / {discovery.findable}
+        </h2>
         <ul className="space-y-2">
-          {ruleLibrary.map((rule) => (
-            <li
-              key={rule.id}
-              className="flex items-center gap-3 rounded-md bg-surface p-3 shadow-clay-1"
-            >
-              <RuleChip name={rule.glyph} tone={toneSurfaces[rule.tone]} />
-              <span className="flex-1 text-small font-bold text-ink">{rule.name}</span>
-              <span className="font-mono text-caption text-ink-muted">
-                {rule.unlocked ? "in play" : "locked"}
-              </span>
-            </li>
+          {discovery.known.map(({ card, found }) => (
+            <DiscoveryRow key={card.id} card={card} found={found} />
+          ))}
+          {discovery.induced.map((name) => (
+            <InducedRow key={name} name={name} />
           ))}
         </ul>
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
@@ -27,6 +28,14 @@ export default function BossPage() {
   const recordPrediction = useRunStore((state) => state.recordPrediction);
   const completeStages = useRunStore((state) => state.completeStages);
   const guidedCase = useRunStore((state) => state.guidedCase);
+  const discoverRule = useRunStore((state) => state.discoverRule);
+  const discoverInduced = useRunStore((state) => state.discoverInduced);
+
+  useEffect(() => {
+    if (boss === null) return;
+    if (boss.card.id === "induced") discoverInduced(boss.rule.name);
+    else discoverRule(boss.card.id);
+  }, [boss, discoverRule, discoverInduced]);
   const evidence = boss?.traces.at(-1);
   const mirror =
     boss !== null && evidence !== undefined ? runRule(boss.rule, evidence.problem) : null;

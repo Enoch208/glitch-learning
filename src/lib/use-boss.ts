@@ -17,7 +17,6 @@ const inducedCard = (rule: RuleProgram): RuleCard => ({
   hint: "A rule GLITCH worked out from your steps",
   tone: "violet",
   glyph: "found",
-  unlocked: true,
 });
 
 export function useBoss(): ActiveBoss | null {

@@ -67,7 +67,7 @@ export const journeyStages: JourneyStage[] = [
   },
 ];
 
-export type RuleGlyphName = "stack" | "swap" | "slip" | "halt" | "found";
+export type RuleGlyphName = "stack" | "swap" | "found";
 
 export type RuleCard = {
   id: string;
@@ -75,7 +75,6 @@ export type RuleCard = {
   hint: string;
   tone: "violet" | "mint" | "peach" | "coral" | "sky" | "rose";
   glyph: RuleGlyphName;
-  unlocked: boolean;
 };
 
 export const ruleLibrary: RuleCard[] = [
@@ -85,7 +84,6 @@ export const ruleLibrary: RuleCard[] = [
     hint: "Takes ten, keeps the ten",
     tone: "mint",
     glyph: "stack",
-    unlocked: true,
   },
   {
     id: "flip-flop",
@@ -93,23 +91,6 @@ export const ruleLibrary: RuleCard[] = [
     hint: "Always small from big",
     tone: "peach",
     glyph: "swap",
-    unlocked: true,
-  },
-  {
-    id: "slip",
-    name: "Slip",
-    hint: "One careless step",
-    tone: "sky",
-    glyph: "slip",
-    unlocked: false,
-  },
-  {
-    id: "short-stop",
-    name: "Short Stop",
-    hint: "Stops borrowing early",
-    tone: "coral",
-    glyph: "halt",
-    unlocked: false,
   },
 ];
 

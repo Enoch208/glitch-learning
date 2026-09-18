@@ -20,6 +20,8 @@ type RunData = {
   explanation: ExplanationRecord | null;
   transfers: TransferRecord[];
   guidedCase: boolean;
+  discoveredRuleIds: string[];
+  discoveredInduced: string[];
   soundOn: boolean;
 };
 
@@ -33,6 +35,8 @@ export type RunState = RunData & {
   completeStages: (ids: string[]) => void;
   resetRun: () => void;
   startGuidedCase: () => void;
+  discoverRule: (id: string) => void;
+  discoverInduced: (name: string) => void;
   toggleSound: () => void;
 };
 
@@ -45,8 +49,16 @@ const freshRun: RunData = {
   explanation: null,
   transfers: [],
   guidedCase: false,
+  discoveredRuleIds: [],
+  discoveredInduced: [],
   soundOn: true,
 };
+
+const kept = (state: RunData) => ({
+  soundOn: state.soundOn,
+  discoveredRuleIds: state.discoveredRuleIds,
+  discoveredInduced: state.discoveredInduced,
+});
 
 export const useRunStore = create<RunState>()(
   persist(
@@ -79,16 +91,30 @@ export const useRunStore = create<RunState>()(
         set({ completedStageIds: completed });
       },
       resetRun: () => {
-        set((state) => ({ ...freshRun, soundOn: state.soundOn }));
+        set((state) => ({ ...freshRun, ...kept(state) }));
       },
       startGuidedCase: () => {
-        set((state) => ({ ...freshRun, guidedCase: true, soundOn: state.soundOn }));
+        set((state) => ({ ...freshRun, ...kept(state), guidedCase: true }));
+      },
+      discoverRule: (id) => {
+        set((state) =>
+          state.discoveredRuleIds.includes(id)
+            ? state
+            : { discoveredRuleIds: [...state.discoveredRuleIds, id] },
+        );
+      },
+      discoverInduced: (name) => {
+        set((state) =>
+          state.discoveredInduced.includes(name)
+            ? state
+            : { discoveredInduced: [...state.discoveredInduced, name] },
+        );
       },
       toggleSound: () => {
         set((state) => ({ soundOn: !state.soundOn }));
       },
     }),
-    { name: "glitch-run", version: 5, migrate: () => freshRun },
+    { name: "glitch-run", version: 6, migrate: () => freshRun },
   ),
 );
 

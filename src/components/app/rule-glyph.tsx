@@ -1,8 +1,6 @@
 import Image, { type StaticImageData } from "next/image";
 import flipFlopArt from "@/assets/clay/rule-flip-flop.webp";
 import freeTenArt from "@/assets/clay/rule-free-ten.webp";
-import shortStopArt from "@/assets/clay/rule-short-stop.webp";
-import slipArt from "@/assets/clay/rule-slip.webp";
 import { cx } from "@/lib/cx";
 import { MysteryBadge } from "./mystery-badge";
 import type { RuleGlyphName } from "@/lib/journey";
@@ -10,8 +8,6 @@ import type { RuleGlyphName } from "@/lib/journey";
 const art: Record<Exclude<RuleGlyphName, "found">, StaticImageData> = {
   stack: freeTenArt,
   swap: flipFlopArt,
-  slip: slipArt,
-  halt: shortStopArt,
 };
 
 const boxes = {

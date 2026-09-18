@@ -3,26 +3,26 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import avatarLearner from "@/assets/clay/avatar-learner.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import { AppShell } from "@/components/app/app-shell";
 import { SectionHeading } from "@/components/app/section-heading";
-import { ClayIcon } from "@/components/clay/clay-icon";
 
-import { cx } from "@/lib/cx";
-import { journeyStages, ruleLibrary } from "@/lib/journey";
+import { journeyStages } from "@/lib/journey";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useRunStore } from "@/store/run-store";
 import { useBoss } from "@/lib/use-boss";
+import { useDiscovery } from "@/lib/use-discovery";
+import { DiscoveryTile } from "@/components/app/discovery";
 import { MysteryBadge } from "@/components/app/mystery-badge";
 import { toneSurfaces } from "@/components/clay/tones";
-import { RuleArt, RuleChip } from "@/components/app/rule-glyph";
+import { RuleChip } from "@/components/app/rule-glyph";
 
 const totalStages = journeyStages.length;
 
 export default function HomePage() {
   const boss = useBoss();
+  const discovery = useDiscovery();
   const hydrated = useHydrated();
   const completedStageIds = useRunStore((state) => state.completedStageIds);
   const done = hydrated ? completedStageIds.length : 0;
@@ -72,29 +72,22 @@ export default function HomePage() {
       </section>
 
       <section className="mb-8">
-        <SectionHeading title="Rules to break" moreHref="/rules" />
+        <SectionHeading
+          title={`Rules discovered ${String(discovery.found)} / ${String(discovery.findable)}`}
+          moreHref="/rules"
+        />
         <ul className="grid grid-cols-2 gap-3">
-          {ruleLibrary.map((rule) => (
-            <li key={rule.id}>
-              <Link
-                href={rule.unlocked ? "/run" : "/rules"}
-                className={cx(
-                  "clay-interactive relative flex h-32 flex-col items-center justify-center gap-2 rounded-xl p-3 shadow-clay-1 active:translate-y-px",
-                  toneSurfaces[rule.tone],
-                  rule.unlocked ? "" : "opacity-70",
-                )}
-              >
-                {rule.unlocked ? null : (
-                  <ClayIcon
-                    glyph={LockSimpleIcon}
-                    size="sm"
-                    weight="fill"
-                    className="absolute top-3 right-3 text-ink-muted"
-                  />
-                )}
-                <RuleArt name={rule.glyph} size="lg" />
-                <span className="text-small font-bold text-ink">{rule.name}</span>
-              </Link>
+          {discovery.known.map(({ card, found }) => (
+            <li key={card.id}>
+              <DiscoveryTile card={card} found={found} />
+            </li>
+          ))}
+          {discovery.induced.map((name) => (
+            <li key={name}>
+              <DiscoveryTile
+                card={{ id: name, name, hint: "", tone: "violet", glyph: "found" }}
+                found
+              />
             </li>
           ))}
         </ul>
