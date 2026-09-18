@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon, ClockIcon, SkullIcon, StackIcon } from "@phosphor-icons/react/dist/ssr";
 import labBackdrop from "@/assets/clay/lab-backdrop.webp";
+import bossDefeated from "@/assets/clay/boss-free-ten-defeated.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import { AppShell } from "@/components/app/app-shell";
 import { PrimaryCta } from "@/components/app/primary-cta";
@@ -29,6 +30,7 @@ export default function LabPage() {
     status: stageStatusFor(stage.id, completed),
   }));
   const nextStage = stages.find((stage) => stage.status === "active");
+  const defeated = completed.includes("transfer");
 
   return (
     <AppShell>
@@ -42,9 +44,9 @@ export default function LabPage() {
           priority
         />
         <Image
-          src={bossIdle}
+          src={defeated ? bossDefeated : bossIdle}
           alt="The Free Ten boss, holding its rod so it cannot come apart"
-          width={73}
+          width={defeated ? 113 : 73}
           height={220}
           className="absolute bottom-2 left-1/2 -translate-x-1/2"
           priority
@@ -64,7 +66,11 @@ export default function LabPage() {
             <p className="text-small font-bold text-mint-700">Subtraction</p>
             <h1 className="mt-1 text-h1 text-ink">Free Ten</h1>
           </div>
-          <ClayTag tone="peach">Stage {Math.min(completed.length + 1, stages.length)}</ClayTag>
+          <ClayTag tone={defeated ? "mint" : "peach"}>
+            {defeated
+              ? "Defeated"
+              : `Stage ${String(Math.min(completed.length + 1, stages.length))}`}
+          </ClayTag>
         </div>
 
         <p className="mb-5 text-small text-ink-soft">

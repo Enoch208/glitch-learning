@@ -35,9 +35,30 @@ export const journeyStages: JourneyStage[] = [
     status: "locked",
     href: "/boss",
   },
-  { id: "forge", index: 5, title: "Forge", detail: "Break the rule", status: "locked" },
-  { id: "explain", index: 6, title: "Explain", detail: "Say why it broke", status: "locked" },
-  { id: "transfer", index: 7, title: "Transfer", detail: "On your own", status: "locked" },
+  {
+    id: "forge",
+    index: 5,
+    title: "Forge",
+    detail: "Break the rule",
+    status: "locked",
+    href: "/forge",
+  },
+  {
+    id: "explain",
+    index: 6,
+    title: "Explain",
+    detail: "Say why it broke",
+    status: "locked",
+    href: "/explain",
+  },
+  {
+    id: "transfer",
+    index: 7,
+    title: "Transfer",
+    detail: "On your own",
+    status: "locked",
+    href: "/transfer",
+  },
 ];
 
 export type RuleGlyphName = "stack" | "swap" | "slip" | "halt";

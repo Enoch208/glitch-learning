@@ -6,29 +6,28 @@ import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import labBackdrop from "@/assets/clay/lab-backdrop.webp";
 import { AppShell } from "@/components/app/app-shell";
+import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
 import { RuleArt } from "@/components/app/rule-glyph";
-import { TraceReview } from "@/components/app/trace-review";
+import { PredictBoss } from "@/components/boss/predict-boss";
 import { ClayIcon } from "@/components/clay/clay-icon";
 import { ClayTag } from "@/components/clay";
-import { sessionOutcome } from "@/engine/game/session";
-import { observationFromTrace } from "@/engine/learner/observation";
-import { ruleLibrary } from "@/lib/journey";
-import { useHydrated } from "@/lib/use-hydrated";
+import { runRule } from "@/engine/rules/interpreter";
+import { useBoss } from "@/lib/use-boss";
 import { useRunStore } from "@/store/run-store";
 
 export default function BossPage() {
-  const hydrated = useHydrated();
-  const traces = useRunStore((state) => state.traces);
-  const recorded = hydrated ? traces : [];
-  const outcome = sessionOutcome(recorded.map(observationFromTrace));
-  const rule =
-    outcome.kind === "boss" ? ruleLibrary.find((entry) => entry.id === outcome.ruleId) : undefined;
-  const evidence = recorded.at(-1);
+  const boss = useBoss();
+  const prediction = useRunStore((state) => state.prediction);
+  const recordPrediction = useRunStore((state) => state.recordPrediction);
+  const completeStages = useRunStore((state) => state.completeStages);
+  const evidence = boss?.traces.at(-1);
+  const mirror =
+    boss !== null && evidence !== undefined ? runRule(boss.rule, evidence.problem) : null;
 
   return (
     <AppShell>
-      <div className="relative h-72 overflow-hidden bg-sky-100">
+      <div className="relative h-64 overflow-hidden bg-sky-100">
         <Image
           src={labBackdrop}
           alt=""
@@ -37,18 +36,18 @@ export default function BossPage() {
           className="object-cover object-bottom"
           priority
         />
-        {rule === undefined ? null : rule.id === "free-ten" ? (
+        {boss === null ? null : boss.card.id === "free-ten" ? (
           <Image
             src={bossIdle}
             alt="The rule GLITCH found, standing up as a character"
-            width={73}
-            height={220}
+            width={66}
+            height={200}
             className="animate-clay-pop absolute bottom-2 left-1/2 -translate-x-1/2"
             priority
           />
         ) : (
           <div className="animate-clay-pop absolute bottom-12 left-1/2 -translate-x-1/2">
-            <RuleArt name={rule.glyph} size="lg" />
+            <RuleArt name={boss.card.glyph} size="lg" />
           </div>
         )}
         <Link
@@ -61,32 +60,44 @@ export default function BossPage() {
       </div>
 
       <div className="relative -mt-6 space-y-5 rounded-t-2xl bg-canvas px-5 pt-6">
-        {rule === undefined ? (
-          <div>
-            <h1 className="text-h1 text-ink">No rule yet</h1>
-            <p className="mt-2 text-small text-ink-soft">
-              GLITCH needs a few more of your answers before a rule can wake up.
-            </p>
-            <div className="mt-6">
-              <PrimaryCta href="/play">Keep going</PrimaryCta>
-            </div>
-          </div>
+        {boss === null ? (
+          <NoBossYet />
         ) : (
           <>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-small font-bold text-coral-700">A rule woke up</p>
-                <h1 className="mt-1 text-h1 text-ink">{rule.name}</h1>
+                <h1 className="mt-1 text-h1 text-ink">{boss.card.name}</h1>
               </div>
               <ClayTag tone="coral">Stage 4</ClayTag>
             </div>
-            <p className="text-small text-ink-soft">
-              This rule seems to explain your steps. {rule.hint}.
-            </p>
-            {evidence === undefined ? null : <TraceReview trace={evidence} />}
-            <p className="rounded-full bg-surface py-4 text-center text-small font-bold text-ink-muted shadow-clay-1">
-              Breaking it comes next.
-            </p>
+            <p className="text-small text-ink-soft">This rule seems to explain your steps.</p>
+
+            {mirror === null || evidence === undefined ? null : (
+              <section className="rounded-xl bg-coral-100 p-5">
+                <p className="text-caption font-bold tracking-widest text-coral-700 uppercase">
+                  The boss copies you
+                </p>
+                <p className="mt-2 font-mono text-h2 text-ink tabular-nums">
+                  {evidence.problem.minuend} &minus; {evidence.problem.subtrahend} &rarr;{" "}
+                  {mirror.answer}
+                </p>
+                <p className="mt-2 text-small text-ink-soft">
+                  Ones become {mirror.onesTop}. Tens stay at {mirror.tensTop}.
+                </p>
+              </section>
+            )}
+
+            <PredictBoss
+              rule={boss.rule}
+              seen={boss.traces.map((trace) => trace.problem)}
+              onPredicted={(problem, predicted, bossAnswer) => {
+                recordPrediction({ problem, predicted, bossAnswer });
+                completeStages(["boss"]);
+              }}
+            />
+
+            {prediction === null ? null : <PrimaryCta href="/forge">Break the rule</PrimaryCta>}
           </>
         )}
       </div>
