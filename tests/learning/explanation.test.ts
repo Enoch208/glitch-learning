@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   conceptStatements,
   evaluateConcepts,
+  evaluateJudgement,
   explanationAccepted,
   requiredConceptIds,
 } from "@/engine/learning/explanation";
@@ -37,6 +38,16 @@ describe("explanation by concept selection", () => {
     expect(explanationAccepted(evaluateConcepts([...requiredConceptIds, decoy?.id ?? ""], 2))).toBe(
       false,
     );
+  });
+
+  test("a model judgement is scored the same way as chosen ideas", () => {
+    expect(evaluateJudgement(requiredConceptIds, false, 1)).toEqual(
+      evaluateConcepts(requiredConceptIds, 1),
+    );
+  });
+
+  test("a model judging the explanation as agreeing with the boss is a contradiction", () => {
+    expect(evaluateJudgement(requiredConceptIds, true, 1).contradiction).toBe(true);
   });
 
   test("there is only ever one follow up", () => {
