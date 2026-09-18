@@ -1,0 +1,7 @@
+node_modules
+.next
+coverage
+pnpm-lock.yaml
+GLITCH v2*.md
+CLAUDE.md
+AGENTS.md
