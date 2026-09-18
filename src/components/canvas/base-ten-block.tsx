@@ -1,3 +1,6 @@
+import Image from "next/image";
+import cubeArt from "@/assets/clay/cube-one.webp";
+import rodArt from "@/assets/clay/rod-ten.webp";
 import { blockSize, dividerLines, type BlockValue } from "@/engine/blocks/geometry";
 import { cx } from "@/lib/cx";
 
@@ -21,6 +24,19 @@ export function BaseTenBlock({
   const { width, height } = blockSize(value, unit);
   const tone = tones[value];
   const radius = Math.round(unit * 0.3);
+
+  if (value !== 100) {
+    return (
+      <Image
+        src={value === 10 ? rodArt : cubeArt}
+        alt=""
+        width={width}
+        height={height}
+        draggable={false}
+        className={cx("object-fill select-none", className)}
+      />
+    );
+  }
 
   return (
     <svg
