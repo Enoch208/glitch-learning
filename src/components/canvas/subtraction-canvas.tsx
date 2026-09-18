@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "motion/react";
 import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { ClayIcon } from "@/components/clay/clay-icon";
 import { createTraceRecorder } from "@/engine/trace/recorder";
@@ -35,21 +36,32 @@ function DigitCell({
   original: number;
   showMark?: boolean;
 }) {
+  const changed = value !== original;
+
   return (
     <span className="flex flex-col items-center">
       {showMark === true ? (
         <span
           className={cx(
             "h-6 font-mono text-caption text-ink-muted",
-            value === original ? "opacity-0" : "line-through",
+            changed ? "line-through" : "opacity-0",
           )}
         >
           {original}
         </span>
       ) : null}
-      <span className="flex h-16 w-14 items-center justify-center text-h1 text-ink tabular-nums">
+      <motion.span
+        key={value}
+        initial={changed ? { scale: 1.22, y: -6 } : false}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 420, damping: 18 }}
+        className={cx(
+          "flex h-16 min-w-14 items-center justify-center px-1 text-h1 tabular-nums",
+          changed ? "text-violet-600" : "text-ink",
+        )}
+      >
         {value}
-      </span>
+      </motion.span>
     </span>
   );
 }
@@ -207,6 +219,8 @@ export function SubtractionCanvas({
         ones={topOnes}
         startOnes={startOnes}
         tenBroken={tookOneTen}
+        onTakeTen={step === "setup" ? toggleOneTen : undefined}
+        onGiveOnes={step === "setup" ? toggleTenOnes : undefined}
         className="mt-4"
       />
 
@@ -255,7 +269,7 @@ export function SubtractionCanvas({
             <AdjustRow
               letter="A"
               badgeTone="bg-mint-200 text-mint-700"
-              label="Give the ones 10 more"
+              label="Ones get 10 more"
               applied={gaveTenOnes}
               onToggle={toggleTenOnes}
               highlighted={guided}
@@ -263,7 +277,7 @@ export function SubtractionCanvas({
             <AdjustRow
               letter="B"
               badgeTone="bg-peach-100 text-peach-700"
-              label="Take 1 from the tens"
+              label="Tens give 1 away"
               applied={tookOneTen}
               onToggle={toggleOneTen}
             />
