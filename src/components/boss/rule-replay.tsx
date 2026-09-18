@@ -1,6 +1,7 @@
 "use client";
 
 import { PlaceValueTray } from "@/components/canvas/place-value-tray";
+import { FlippedOnes } from "./flipped-ones";
 import type { RuleProgram } from "@/engine/rules/ast";
 import { runRule } from "@/engine/rules/interpreter";
 import type { SubtractionProblem } from "@/engine/math/truth";
@@ -54,16 +55,7 @@ export function RuleReplay({
         className="mt-3 bg-surface"
       />
       {!valueChanged && beat >= REVEAL_BEATS.glitch ? (
-        <p className="mt-2 font-mono text-small text-coral-700">
-          Ones:{" "}
-          <s>
-            {String(startOnes)} &minus; {String(problem.subtrahend % 10)}
-          </s>{" "}
-          &rarr;{" "}
-          <span className={glitching ? "glitch-fringe" : ""}>
-            {String(problem.subtrahend % 10)} &minus; {String(startOnes)}
-          </span>
-        </p>
+        <FlippedOnes problem={problem} glitching={glitching} className="mt-2" />
       ) : null}
       {beat >= REVEAL_BEATS.glitch ? (
         <p

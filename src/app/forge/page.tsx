@@ -1,20 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app/app-shell";
 import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
 import { StageHeader } from "@/components/app/stage-header";
 import { DigitStepper } from "@/components/forge/digit-stepper";
-import { RuleBroken } from "@/components/forge/rule-broken";
+import { TRAP_BEATS, TrapReplay } from "@/components/forge/trap-replay";
 import { evaluateForge, forgeHints, type ForgeEvaluation } from "@/engine/counterexample/search";
 import { useBoss } from "@/lib/use-boss";
 import { useCue } from "@/lib/sound/use-cue";
+import { useTimeline } from "@/lib/use-timeline";
 import { useRunStore } from "@/store/run-store";
 
 type Digits = { topTens: number; topOnes: number; bottomTens: number; bottomOnes: number };
 
 const HINT_AFTER = 2;
+const TRAP_MARKS = [350, 1250, 2100, 2700];
 
 export default function ForgePage() {
   const boss = useBoss();
@@ -29,6 +31,12 @@ export default function ForgePage() {
   });
   const [result, setResult] = useState<ForgeEvaluation | null>(null);
   const [misses, setMisses] = useState(0);
+  const broken = result?.contradictsRule === true;
+  const beat = useTimeline(broken, TRAP_MARKS);
+
+  useEffect(() => {
+    if (beat === TRAP_BEATS.clash) cue("break");
+  }, [beat, cue]);
 
   if (boss === null) {
     return (
@@ -44,7 +52,6 @@ export default function ForgePage() {
     subtrahend: digits.bottomTens * 10 + digits.bottomOnes,
   };
   const hints = forgeHints(boss.rule);
-  const broken = result?.contradictsRule === true;
 
   const set = (key: keyof Digits) => (value: number) => {
     setResult(null);
@@ -66,7 +73,6 @@ export default function ForgePage() {
         attempts: misses + 1,
       });
       completeStages(["forge"]);
-      cue("break");
     } else {
       cue("tap");
       setMisses((count) => count + 1);
@@ -119,16 +125,19 @@ export default function ForgePage() {
         )}
       </section>
 
-      {result === null ? null : broken &&
-        result.glitchAnswer !== null &&
-        result.truthAnswer !== null ? (
+      {result === null ? null : broken ? (
         <>
-          <RuleBroken
-            bossAnswer={result.glitchAnswer}
-            truthAnswer={result.truthAnswer}
-            showCharacter={boss.card.id === "free-ten"}
+          <TrapReplay
+            problem={problem}
+            rule={boss.rule}
+            bossName={boss.card.name}
+            bossId={boss.card.id}
+            glyph={boss.card.glyph}
+            beat={beat}
           />
-          <PrimaryCta href="/explain">Why did it break?</PrimaryCta>
+          {beat >= TRAP_BEATS.broken ? (
+            <PrimaryCta href="/explain">Why did it break?</PrimaryCta>
+          ) : null}
         </>
       ) : (
         <p
