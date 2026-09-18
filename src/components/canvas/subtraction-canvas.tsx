@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { ClayIcon } from "@/components/clay/clay-icon";
 import { createTraceRecorder } from "@/engine/trace/recorder";
@@ -99,6 +99,16 @@ export function SubtractionCanvas({
   const cue = useCue();
   const recorder = useRef(createTraceRecorder(problem));
   const [step, setStep] = useState<Step>("look");
+  const promptRef = useRef<HTMLParagraphElement>(null);
+  const firstStep = useRef(true);
+
+  useEffect(() => {
+    if (firstStep.current) {
+      firstStep.current = false;
+      return;
+    }
+    promptRef.current?.focus();
+  }, [step]);
   const [gaveTenOnes, setGaveTenOnes] = useState(false);
   const [tookOneTen, setTookOneTen] = useState(false);
   const [results, setResults] = useState<Record<Place, number | null>>({ ones: null, tens: null });
@@ -173,7 +183,14 @@ export function SubtractionCanvas({
   return (
     <div className="flex w-full flex-col">
       <div className="mb-1 flex items-baseline justify-between gap-3">
-        <p className="text-body font-bold text-ink">{prompts[step]}</p>
+        <p
+          ref={promptRef}
+          tabIndex={-1}
+          aria-live="polite"
+          className="text-body font-bold text-ink focus-visible:outline-none"
+        >
+          {prompts[step]}
+        </p>
         <span className="font-mono text-caption text-ink-muted">
           {stepNumber}/{steps.length}
         </span>
