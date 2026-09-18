@@ -39,6 +39,7 @@ function randomEvidence(random: Random): RunEvidence {
 
   return {
     traces,
+    induced: null,
     prediction:
       random() < 0.5
         ? null

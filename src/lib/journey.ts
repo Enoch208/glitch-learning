@@ -61,7 +61,7 @@ export const journeyStages: JourneyStage[] = [
   },
 ];
 
-export type RuleGlyphName = "stack" | "swap" | "slip" | "halt";
+export type RuleGlyphName = "stack" | "swap" | "slip" | "halt" | "found";
 
 export type RuleCard = {
   id: string;

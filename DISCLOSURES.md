@@ -2,7 +2,11 @@
 
 ## AI in the product
 
-No model runs in GLITCH today. Diagnosis, rule execution, counterexamples, explanation checking, transfer and victory are all deterministic code. When a model is connected, it will be limited to proposing candidate rules in the closed rule language, judging free-text explanations and writing boss dialogue. It will not decide what is correct or whether the learner has won.
+- **Provider and model:** Anthropic, Claude Opus 5 (`claude-opus-5`), called from the server with Anthropic's server-side refusal fallback enabled. It runs only when an `ANTHROPIC_API_KEY` is configured.
+- **What the model does:** when none of the known rules explains a learner who keeps getting answers wrong, it proposes up to three candidate rules written in GLITCH's closed rule language. It can also read a learner's written explanation and say which of four regrouping ideas it contains.
+- **What the model does not do:** it never decides the correct answer, whether a rule is real, whether a counterexample is valid, whether a transfer problem was solved, or whether the learner has won. A proposed rule becomes a boss only after deterministic code confirms it reproduces every recorded answer and rewritten digit and disagrees with correct regrouping on at least two problems. Coverage, follow-up questions and acceptance of an explanation are computed by the same deterministic code used when the learner picks ideas instead.
+- **Without the model:** everything works. Known rules still diagnose, and explanation falls back to picking ideas from a list.
+- **What is sent:** the problems, the learner's rewritten digits and answers, and any explanation text the learner chooses to write. No name, account or device identifier is sent.
 
 ## AI-assisted development
 

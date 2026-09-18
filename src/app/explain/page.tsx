@@ -6,6 +6,7 @@ import { AppShell } from "@/components/app/app-shell";
 import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
 import { StageHeader } from "@/components/app/stage-header";
+import { OwnWords } from "@/components/explain/own-words";
 import { ClayIcon } from "@/components/clay/clay-icon";
 import {
   conceptStatements,
@@ -45,12 +46,11 @@ export default function ExplainPage() {
     );
   };
 
-  const check = () => {
-    const evaluation = evaluateConcepts(selected, attempt);
+  const settle = (evaluation: ExplanationEvaluation, chosen: string[]) => {
     setResult(evaluation);
     if (explanationAccepted(evaluation) || evaluation.followUp === null) {
       recordExplanation({
-        selected,
+        selected: chosen,
         missing: evaluation.conceptsMissing,
         coverage: evaluation.coverage,
         contradiction: evaluation.contradiction,
@@ -63,6 +63,10 @@ export default function ExplainPage() {
     }
   };
 
+  const check = () => {
+    settle(evaluateConcepts(selected, attempt), selected);
+  };
+
   return (
     <AppShell className="space-y-5 px-5 pt-6">
       <StageHeader title="Explain" stage={6} />
@@ -71,7 +75,16 @@ export default function ExplainPage() {
           ? "Why does the boss break?"
           : `Why was the boss wrong about ${String(forge.problem.minuend)} − ${String(forge.problem.subtrahend)}?`}
       </p>
-      <p className="-mt-3 text-small text-ink-muted">Pick every idea that is true.</p>
+      {finished ? null : (
+        <OwnWords
+          ruleName={boss.card.name}
+          attempt={attempt === 1 ? 1 : 2}
+          onEvaluated={(evaluation) => {
+            settle(evaluation, evaluation.conceptsPresent);
+          }}
+        />
+      )}
+      <p className="text-small text-ink-muted">Or pick every idea that is true.</p>
 
       <ul className="space-y-2">
         {conceptStatements.map((statement, index) => {

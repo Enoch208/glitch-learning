@@ -1,4 +1,5 @@
 import { observationFromTrace } from "@/engine/learner/observation";
+import { inducedRuleVerified } from "@/engine/rules/induction";
 import type { RunEvidence } from "./evidence";
 import { sessionOutcome } from "./session";
 
@@ -17,8 +18,13 @@ export const STAGE_ORDER = [
 const guards: Record<string, (evidence: RunEvidence) => boolean> = {
   encounter: (evidence) => evidence.traces.length > 0,
   observation: (evidence) => evidence.traces.length > 0,
-  diagnostic: (evidence) =>
-    sessionOutcome(evidence.traces.map(observationFromTrace)).kind === "boss",
+  diagnostic: (evidence) => {
+    const observations = evidence.traces.map(observationFromTrace);
+    return (
+      sessionOutcome(observations).kind === "boss" ||
+      (evidence.induced !== null && inducedRuleVerified(evidence.induced, observations))
+    );
+  },
   boss: (evidence) => evidence.prediction !== null,
   forge: (evidence) =>
     evidence.forge !== null && evidence.forge.glitchAnswer !== evidence.forge.truthAnswer,

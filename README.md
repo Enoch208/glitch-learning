@@ -47,7 +47,7 @@ A rule is a small program in a closed language that the interpreter owns. Diagno
 
 ## Limitations
 
-See [KNOWN_LIMITS.md](KNOWN_LIMITS.md). The most important: no language model is connected yet, and nothing has been tested with real learners.
+See [KNOWN_LIMITS.md](KNOWN_LIMITS.md). The most important: nothing has been tested with real learners, and the model path has not yet been measured live.
 
 ## Run locally
 
@@ -58,7 +58,10 @@ pnpm install
 pnpm dev          # http://localhost:3000, best at phone width
 pnpm test         # unit tests
 pnpm eval         # regenerate evals/results/diagnosis.json
+pnpm eval:model   # live model check, needs ANTHROPIC_API_KEY in .env.local
 ```
+
+The app runs fully without a key. Adding `ANTHROPIC_API_KEY` to `.env.local` lets Claude propose rules the library does not contain and read written explanations.
 
 `/judges` starts a guided run. `/lab` shows the model's view of the current session. `/eval` shows the measurements above.
 

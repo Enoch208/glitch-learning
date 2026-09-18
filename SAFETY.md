@@ -2,7 +2,7 @@
 
 GLITCH is built for children aged 8 to 11.
 
-- **No chat.** There is no free-form conversation anywhere in the learner experience.
+- **No chat.** There is no free-form conversation anywhere in the learner experience. The one text box asks for a short explanation, is limited to 500 characters, and gets back only which ideas it contains, never generated text.
 - **No ads and no outbound links** from the learner screens.
 - **No inference about the child.** GLITCH models a rule that explains a sequence of steps. It does not infer emotion, attention, ability, mental health or personality.
 - **Language about rules, not children.** The boss is introduced as a rule that "seems to explain your steps". The learner is never told they are wrong, bad at subtraction or behind.

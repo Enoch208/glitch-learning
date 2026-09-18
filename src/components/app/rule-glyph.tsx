@@ -4,9 +4,10 @@ import freeTenArt from "@/assets/clay/rule-free-ten.webp";
 import shortStopArt from "@/assets/clay/rule-short-stop.webp";
 import slipArt from "@/assets/clay/rule-slip.webp";
 import { cx } from "@/lib/cx";
+import { MysteryBadge } from "./mystery-badge";
 import type { RuleGlyphName } from "@/lib/journey";
 
-const art: Record<RuleGlyphName, StaticImageData> = {
+const art: Record<Exclude<RuleGlyphName, "found">, StaticImageData> = {
   stack: freeTenArt,
   swap: flipFlopArt,
   slip: slipArt,
@@ -30,6 +31,10 @@ export function RuleArt({
   size?: RuleArtSize;
   className?: string | undefined;
 }) {
+  if (name === "found") {
+    return <MysteryBadge size={size === "lg" ? "lg" : "sm"} className={className} />;
+  }
+
   const source = art[name];
   const box = boxes[size];
   const scale = Math.min(box / source.width, box / source.height);

@@ -7,12 +7,14 @@ import type {
   TransferRecord,
 } from "@/engine/game/evidence";
 import { completeStage } from "@/engine/game/machine";
+import type { RuleProgram } from "@/engine/rules/ast";
 import type { ReasoningTrace } from "@/events/trace";
 import { journeyStages, type StageStatus } from "@/lib/journey";
 
 type RunData = {
   completedStageIds: string[];
   traces: ReasoningTrace[];
+  induced: RuleProgram | null;
   prediction: PredictionRecord | null;
   forge: ForgeRecord | null;
   explanation: ExplanationRecord | null;
@@ -22,6 +24,7 @@ type RunData = {
 
 export type RunState = RunData & {
   recordTrace: (trace: ReasoningTrace) => void;
+  recordInduced: (rule: RuleProgram) => void;
   recordPrediction: (prediction: PredictionRecord) => void;
   recordForge: (forge: ForgeRecord) => void;
   recordExplanation: (explanation: ExplanationRecord) => void;
@@ -34,6 +37,7 @@ export type RunState = RunData & {
 const freshRun: RunData = {
   completedStageIds: [],
   traces: [],
+  induced: null,
   prediction: null,
   forge: null,
   explanation: null,
@@ -47,6 +51,9 @@ export const useRunStore = create<RunState>()(
       ...freshRun,
       recordTrace: (trace) => {
         set((state) => ({ traces: [...state.traces, trace] }));
+      },
+      recordInduced: (rule) => {
+        set({ induced: rule });
       },
       recordPrediction: (prediction) => {
         set({ prediction });
@@ -75,7 +82,7 @@ export const useRunStore = create<RunState>()(
         set((state) => ({ soundOn: !state.soundOn }));
       },
     }),
-    { name: "glitch-run", version: 3, migrate: () => freshRun },
+    { name: "glitch-run", version: 4, migrate: () => freshRun },
   ),
 );
 

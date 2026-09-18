@@ -1,4 +1,5 @@
 import type { SubtractionProblem } from "@/engine/math/truth";
+import type { RuleProgram } from "@/engine/rules/ast";
 import type { ReasoningTrace } from "@/events/trace";
 
 export type PredictionRecord = {
@@ -26,6 +27,7 @@ export type TransferRecord = { problem: SubtractionProblem; answer: number; pass
 
 export type RunEvidence = {
   traces: ReasoningTrace[];
+  induced: RuleProgram | null;
   prediction: PredictionRecord | null;
   forge: ForgeRecord | null;
   explanation: ExplanationRecord | null;

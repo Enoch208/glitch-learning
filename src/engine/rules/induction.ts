@@ -1,7 +1,7 @@
 import type { Observation } from "@/engine/learner/observation";
 import { MAX_RULE_NODES, parseRule, ruleComplexity, type RuleProgram } from "./ast";
 import { runRule } from "./interpreter";
-import { knownRules } from "./known-rules";
+import { correctRule, knownRules } from "./known-rules";
 
 export const MAX_PROPOSALS = 3;
 
@@ -111,4 +111,27 @@ export async function induceRules(
     rejected,
     ranked: [...induced, ...known].sort((a, b) => b.score - a.score || a.complexity - b.complexity),
   };
+}
+
+export const MIN_DISCRIMINATING_FOR_INDUCED = 2;
+
+export function inducedRuleVerified(candidate: unknown, observations: Observation[]): boolean {
+  const parsed = parseRule(candidate);
+  if (!parsed.ok) return false;
+
+  const explainsEverything = observations.every((observation) => {
+    const run = runRule(parsed.rule, observation.problem);
+    return (
+      run.answer === observation.answer &&
+      run.onesTop === observation.steps.onesTop &&
+      run.tensTop === observation.steps.tensTop
+    );
+  });
+  const disagreesWithCorrect = observations.filter(
+    (observation) =>
+      runRule(parsed.rule, observation.problem).answer !==
+      runRule(correctRule, observation.problem).answer,
+  ).length;
+
+  return explainsEverything && disagreesWithCorrect >= MIN_DISCRIMINATING_FOR_INDUCED;
 }

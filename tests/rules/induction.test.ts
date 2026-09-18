@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { induceRules, type RuleProposer } from "@/engine/rules/induction";
+import { induceRules, inducedRuleVerified, type RuleProposer } from "@/engine/rules/induction";
 import type { RuleProgram } from "@/engine/rules/ast";
 import { runRule } from "@/engine/rules/interpreter";
-import { freeTenRule } from "@/engine/rules/known-rules";
+import { correctRule, freeTenRule } from "@/engine/rules/known-rules";
 import type { Observation } from "@/engine/learner/observation";
 
 const zeroOnesRule: RuleProgram = {
@@ -96,5 +96,34 @@ describe("rule induction", () => {
     const a = await induceRules(zeroOnesEvidence, proposing([zeroOnesRule]));
     const b = await induceRules(zeroOnesEvidence, proposing([zeroOnesRule]));
     expect(a.ranked.map((c) => c.score)).toEqual(b.ranked.map((c) => c.score));
+  });
+});
+
+describe("verifying an induced rule before it can become a boss", () => {
+  test("a rule that reproduces every step on problems where it differs from correct is accepted", () => {
+    expect(inducedRuleVerified(zeroOnesRule, zeroOnesEvidence)).toBe(true);
+  });
+
+  test("a rule that does not reproduce what the learner did is refused", () => {
+    const freeTenEvidence = [observe(freeTenRule, 52, 28), observe(freeTenRule, 31, 15)];
+    expect(inducedRuleVerified(zeroOnesRule, freeTenEvidence)).toBe(false);
+  });
+
+  test("correct regrouping is never a boss, however well it fits", () => {
+    const correctEvidence = [observe(correctRule, 52, 28), observe(correctRule, 31, 15)];
+    expect(inducedRuleVerified(correctRule, correctEvidence)).toBe(false);
+  });
+
+  test("one problem where the rule differs from correct is not enough", () => {
+    expect(inducedRuleVerified(zeroOnesRule, zeroOnesEvidence.slice(0, 1))).toBe(false);
+  });
+
+  test("anything that fails the validator is refused", () => {
+    expect(
+      inducedRuleVerified(
+        { ...zeroOnesRule, onesTop: { op: "var", name: "onesTop" } },
+        zeroOnesEvidence,
+      ),
+    ).toBe(false);
   });
 });

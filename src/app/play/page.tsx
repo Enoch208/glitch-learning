@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { AppShell } from "@/components/app/app-shell";
-import { PrimaryCta } from "@/components/app/primary-cta";
 import { TraceReview } from "@/components/app/trace-review";
+import { NoRuleResolution } from "@/components/play/no-rule-resolution";
 import { SubtractionCanvas } from "@/components/canvas/subtraction-canvas";
 import { ClayIcon } from "@/components/clay/clay-icon";
 import { MAX_DIAGNOSTIC_QUESTIONS, nextProblem, sessionOutcome } from "@/engine/game/session";
@@ -91,13 +91,7 @@ export default function PlayPage() {
               Meet the rule
             </button>
           ) : outcome.kind === "no-rule-found" ? (
-            <>
-              <section className="rounded-xl bg-mint-100 p-5 text-center">
-                <p className="text-body font-bold text-mint-700">No rule to break this time.</p>
-                <p className="mt-1 text-small text-ink-soft">Your regrouping held up every time.</p>
-              </section>
-              <PrimaryCta href="/">Back home</PrimaryCta>
-            </>
+            <NoRuleResolution observations={observations} />
           ) : (
             <button
               type="button"
@@ -125,10 +119,7 @@ export default function PlayPage() {
           </button>
         </section>
       ) : outcome.kind === "no-rule-found" ? (
-        <section className="rounded-xl bg-surface p-5 text-center shadow-clay-2">
-          <p className="text-body font-bold text-ink">No rule to break this time.</p>
-          <p className="mt-2 text-small text-ink-muted">Your regrouping held up every time.</p>
-        </section>
+        <NoRuleResolution observations={observations} />
       ) : (
         <section className="rounded-xl bg-surface p-5 shadow-clay-2">
           <SubtractionCanvas

@@ -4,7 +4,13 @@ GLITCH is a single Next.js app. The engine under `src/engine` is plain TypeScrip
 
 ## The boundary
 
-A model may one day propose candidate rules, judge a free-text explanation, and write boss dialogue. It never decides the correct answer, whether a counterexample is valid, whether a transfer problem was solved, or whether the learner has won. None of those paths calls a model today.
+Claude proposes candidate rules and judges which ideas a written explanation contains. It never decides the correct answer, whether a counterexample is valid, whether a transfer problem was solved, or whether the learner has won.
+
+## Model layer
+
+`src/ai` is imported only by the route handlers `/api/model/induce` and `/api/explanation/evaluate`, so no model code or key reaches the browser. Structured outputs cannot describe a recursive schema, so the model returns a fixed wrapper holding each candidate program as JSON text, and GLITCH's own validator decides whether that text is a legal program. A refusal or truncated output counts as a failure. With no key or any failure, induction returns the known rules and explanation falls back to choosing ideas.
+
+An induced rule becomes a boss only through `inducedRuleVerified`: it must pass the validator, reproduce every recorded answer and rewritten digit, and disagree with correct regrouping on at least two problems. The stage machine repeats that check before diagnosis can complete.
 
 ## Engine
 

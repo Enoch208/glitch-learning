@@ -1,7 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { completeStage, STAGE_ORDER, type RunEvidence } from "@/engine/game/machine";
 import { runRule } from "@/engine/rules/interpreter";
-import { freeTenRule } from "@/engine/rules/known-rules";
+import { correctRule, freeTenRule } from "@/engine/rules/known-rules";
+import type { RuleProgram } from "@/engine/rules/ast";
 import type { ReasoningTrace } from "@/events/trace";
 
 const freeTenTrace = (minuend: number, subtrahend: number): ReasoningTrace => {
@@ -21,6 +22,7 @@ const freeTenTrace = (minuend: number, subtrahend: number): ReasoningTrace => {
 
 const empty: RunEvidence = {
   traces: [],
+  induced: null,
   prediction: null,
   forge: null,
   explanation: null,
@@ -29,6 +31,7 @@ const empty: RunEvidence = {
 
 const full: RunEvidence = {
   traces: [freeTenTrace(52, 28), freeTenTrace(31, 15)],
+  induced: null,
   prediction: { problem: { minuend: 20, subtrahend: 17 }, predicted: 13, bossAnswer: 13 },
   forge: {
     problem: { minuend: 20, subtrahend: 11 },
@@ -94,5 +97,63 @@ describe("stage machine", () => {
   test("completing a finished stage again changes nothing", () => {
     const result = completeStage(["encounter"], "encounter", full);
     expect(result).toEqual({ ok: true, completed: ["encounter"] });
+  });
+});
+
+const zeroWhenStuck: RuleProgram = {
+  name: "Zero when stuck",
+  onesTop: { op: "var", name: "topOnes" },
+  tensTop: { op: "var", name: "topTens" },
+  onesResult: {
+    op: "if",
+    condition: {
+      op: "lessThan",
+      left: { op: "var", name: "topOnes" },
+      right: { op: "var", name: "bottomOnes" },
+    },
+    then: { op: "const", value: 0 },
+    else: {
+      op: "subtract",
+      left: { op: "var", name: "onesTop" },
+      right: { op: "var", name: "bottomOnes" },
+    },
+  },
+  tensResult: {
+    op: "subtract",
+    left: { op: "var", name: "tensTop" },
+    right: { op: "var", name: "bottomTens" },
+  },
+};
+
+const traceBy = (rule: RuleProgram, minuend: number, subtrahend: number): ReasoningTrace => ({
+  problemId: `p-${String(minuend)}-${String(subtrahend)}`,
+  problem: { minuend, subtrahend },
+  events: [],
+  finalAnswer: runRule(rule, { minuend, subtrahend }).answer,
+  startedAt: 0,
+  completedAt: 1,
+});
+
+describe("diagnosis from an induced rule", () => {
+  const traces = [traceBy(zeroWhenStuck, 52, 28), traceBy(zeroWhenStuck, 31, 15)];
+
+  test("a verified induced rule completes diagnosis", () => {
+    expect(
+      completeStage(["encounter", "observation"], "diagnostic", {
+        ...empty,
+        traces,
+        induced: zeroWhenStuck,
+      }).ok,
+    ).toBe(true);
+  });
+
+  test("an induced rule that does not explain the traces does not", () => {
+    expect(
+      completeStage(["encounter", "observation"], "diagnostic", {
+        ...empty,
+        traces,
+        induced: correctRule,
+      }).ok,
+    ).toBe(false);
   });
 });
