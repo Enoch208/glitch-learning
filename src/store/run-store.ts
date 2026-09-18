@@ -22,6 +22,7 @@ type RunData = {
   guidedCase: boolean;
   discoveredRuleIds: string[];
   discoveredInduced: string[];
+  defeatedRuleIds: string[];
   soundOn: boolean;
 };
 
@@ -37,6 +38,7 @@ export type RunState = RunData & {
   startGuidedCase: () => void;
   discoverRule: (id: string) => void;
   discoverInduced: (name: string) => void;
+  defeatRule: (id: string) => void;
   toggleSound: () => void;
 };
 
@@ -51,6 +53,7 @@ const freshRun: RunData = {
   guidedCase: false,
   discoveredRuleIds: [],
   discoveredInduced: [],
+  defeatedRuleIds: [],
   soundOn: true,
 };
 
@@ -58,6 +61,7 @@ const kept = (state: RunData) => ({
   soundOn: state.soundOn,
   discoveredRuleIds: state.discoveredRuleIds,
   discoveredInduced: state.discoveredInduced,
+  defeatedRuleIds: state.defeatedRuleIds,
 });
 
 export const useRunStore = create<RunState>()(
@@ -108,6 +112,13 @@ export const useRunStore = create<RunState>()(
           state.discoveredInduced.includes(name)
             ? state
             : { discoveredInduced: [...state.discoveredInduced, name] },
+        );
+      },
+      defeatRule: (id) => {
+        set((state) =>
+          state.defeatedRuleIds.includes(id)
+            ? state
+            : { defeatedRuleIds: [...state.defeatedRuleIds, id] },
         );
       },
       toggleSound: () => {

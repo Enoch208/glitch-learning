@@ -62,11 +62,11 @@ export default function ProgressPage() {
 
       <section>
         <h2 className="mb-3 text-body font-bold text-ink">
-          Rules discovered {discovery.found} / {discovery.findable}
+          Glitch Book: {discovery.found} found, {discovery.defeated} defeated
         </h2>
         <ul className="space-y-2">
-          {discovery.known.map(({ card, found }) => (
-            <DiscoveryRow key={card.id} card={card} found={found} />
+          {discovery.known.map(({ card, found, defeated }) => (
+            <DiscoveryRow key={card.id} card={card} found={found} defeated={defeated} />
           ))}
           {discovery.induced.map((name) => (
             <InducedRow key={name} name={name} />

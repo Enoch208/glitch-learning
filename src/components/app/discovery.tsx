@@ -22,7 +22,15 @@ export function DiscoveryTile({ card, found }: { card: RuleCard; found: boolean 
   );
 }
 
-export function DiscoveryRow({ card, found }: { card: RuleCard; found: boolean }) {
+export function DiscoveryRow({
+  card,
+  found,
+  defeated,
+}: {
+  card: RuleCard;
+  found: boolean;
+  defeated: boolean;
+}) {
   return (
     <li className="flex items-center gap-3 rounded-md bg-surface p-3 shadow-clay-1">
       {found ? <RuleChip name={card.glyph} tone={toneSurfaces[card.tone]} /> : <MysteryBadge />}
@@ -31,9 +39,23 @@ export function DiscoveryRow({ card, found }: { card: RuleCard; found: boolean }
           {found ? card.name : "???"}
         </span>
         <span className="block text-caption text-ink-muted">
-          {found ? card.hint : "Not found yet"}
+          {defeated
+            ? "Broken with your own counterexample, then beaten on a new problem"
+            : found
+              ? card.hint
+              : "Not found yet"}
         </span>
       </span>
+      {found ? (
+        <span
+          className={cx(
+            "rounded-full px-2.5 py-1 text-caption font-bold",
+            defeated ? "bg-mint-100 text-mint-700" : "bg-coral-100 text-coral-700",
+          )}
+        >
+          {defeated ? "Defeated" : "Still standing"}
+        </span>
+      ) : null}
     </li>
   );
 }

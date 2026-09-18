@@ -22,6 +22,7 @@ export default function TransferPage() {
   const prediction = useRunStore((state) => state.prediction);
   const forge = useRunStore((state) => state.forge);
   const recordTransfer = useRunStore((state) => state.recordTransfer);
+  const defeatRule = useRunStore((state) => state.defeatRule);
   const completeStages = useRunStore((state) => state.completeStages);
   const [attempt, setAttempt] = useState(1);
   const [status, setStatus] = useState<Status>("working");
@@ -52,6 +53,7 @@ export default function TransferPage() {
     recordTransfer({ problem, answer: trace.finalAnswer, passed });
     if (passed) {
       completeStages(["transfer"]);
+      defeatRule(boss.card.id === "induced" ? boss.rule.name : boss.card.id);
       cue("victory");
       setStatus("passed");
     } else {
