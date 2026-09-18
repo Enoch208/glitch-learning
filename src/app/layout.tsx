@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import NextTopLoader from "nextjs-toploader";
+import { RouteProgress } from "@/components/app/route-progress";
 import { browserThemeColor } from "@/lib/brand";
 import { cx } from "@/lib/cx";
 import "./globals.css";
@@ -37,12 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={cx(jakarta.variable, jetbrains.variable)}>
       <body>
-        <NextTopLoader
-          color="var(--color-violet-500)"
-          height={3}
-          showSpinner={false}
-          shadow="0 0 10px var(--color-violet-400)"
-        />
+        <RouteProgress />
         {children}
       </body>
     </html>

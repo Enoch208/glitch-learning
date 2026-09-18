@@ -17,9 +17,9 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="pb-safe sticky bottom-0 z-20 mt-6 w-full px-3">
-      <nav className="rounded-xl bg-surface px-1 py-1.5 shadow-clay-3">
-        <ul className="flex items-stretch">
+    <div className="pb-safe z-20 w-full shrink-0 px-3">
+      <nav className="rounded-2xl bg-surface p-1.5 shadow-clay-2">
+        <ul className="flex items-stretch gap-0.5">
           {items.map((item) => {
             const active = pathname === item.href;
 
@@ -29,8 +29,11 @@ export function BottomNav() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cx(
-                    "clay-interactive flex h-14 flex-col items-center justify-center gap-1 rounded-md",
-                    active ? "text-violet-500" : "text-ink-muted",
+                    "clay-interactive flex h-14 flex-col items-center justify-center gap-0.5 rounded-lg",
+                    "active:translate-y-px active:shadow-clay-pressed",
+                    active
+                      ? "bg-surface text-violet-500 shadow-clay-1"
+                      : "text-ink-muted hover:bg-violet-50/70",
                   )}
                 >
                   <ClayIcon glyph={item.glyph} size="nav" weight={active ? "fill" : "regular"} />
