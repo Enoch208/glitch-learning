@@ -3,37 +3,44 @@ import { persist } from "zustand/middleware";
 import type { ReasoningTrace } from "@/events/trace";
 import { journeyStages, type StageStatus } from "@/lib/journey";
 
-export type RunState = {
+type RunData = {
   completedStageIds: string[];
-  lastTrace: ReasoningTrace | null;
+  traces: ReasoningTrace[];
   soundOn: boolean;
-  completeStage: (id: string, trace: ReasoningTrace | null) => void;
+};
+
+export type RunState = RunData & {
+  recordTrace: (trace: ReasoningTrace) => void;
+  completeStages: (ids: string[]) => void;
   resetRun: () => void;
   toggleSound: () => void;
 };
 
+const freshRun: RunData = { completedStageIds: [], traces: [], soundOn: true };
+
 export const useRunStore = create<RunState>()(
   persist(
     (set) => ({
-      completedStageIds: [],
-      lastTrace: null,
-      soundOn: true,
-      completeStage: (id, trace) => {
+      ...freshRun,
+      recordTrace: (trace) => {
+        set((state) => ({ traces: [...state.traces, trace] }));
+      },
+      completeStages: (ids) => {
         set((state) => ({
-          completedStageIds: state.completedStageIds.includes(id)
-            ? state.completedStageIds
-            : [...state.completedStageIds, id],
-          lastTrace: trace ?? state.lastTrace,
+          completedStageIds: [
+            ...state.completedStageIds,
+            ...ids.filter((id) => !state.completedStageIds.includes(id)),
+          ],
         }));
       },
       resetRun: () => {
-        set({ completedStageIds: [], lastTrace: null });
+        set((state) => ({ ...freshRun, soundOn: state.soundOn }));
       },
       toggleSound: () => {
         set((state) => ({ soundOn: !state.soundOn }));
       },
     }),
-    { name: "glitch-run" },
+    { name: "glitch-run", version: 2, migrate: () => freshRun },
   ),
 );
 

@@ -4,7 +4,6 @@ import { AppShell } from "@/components/app/app-shell";
 import { RuleChip } from "@/components/app/rule-glyph";
 import { ClayProgress, ClayTag } from "@/components/clay";
 import { toneSurfaces } from "@/components/clay/tones";
-import { solveByColumns } from "@/engine/math/truth";
 import { journeyStages, ruleLibrary } from "@/lib/journey";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useRunStore } from "@/store/run-store";
@@ -12,7 +11,8 @@ import { useRunStore } from "@/store/run-store";
 export default function ProgressPage() {
   const hydrated = useHydrated();
   const completedStageIds = useRunStore((state) => state.completedStageIds);
-  const lastTrace = useRunStore((state) => state.lastTrace);
+  const traces = useRunStore((state) => state.traces);
+  const lastTrace = hydrated ? (traces.at(-1) ?? null) : null;
 
   const done = hydrated ? completedStageIds.length : 0;
   const total = journeyStages.length;
@@ -36,20 +36,17 @@ export default function ProgressPage() {
 
       <section className="mb-6">
         <h2 className="mb-3 text-body font-bold text-ink">Last thing you did</h2>
-        {hydrated && lastTrace !== null ? (
+        {lastTrace !== null ? (
           <div className="rounded-xl bg-surface p-5 shadow-clay-1">
             <div className="mb-3 flex items-center gap-2">
-              {lastTrace.finalAnswer === solveByColumns(lastTrace.problem).answer ? (
-                <ClayTag tone="mint">Correct</ClayTag>
-              ) : (
-                <ClayTag tone="coral">You said {lastTrace.finalAnswer}</ClayTag>
-              )}
+              <ClayTag tone="violet">You answered {lastTrace.finalAnswer}</ClayTag>
               <span className="font-mono text-caption text-ink-muted">
                 {lastTrace.problem.minuend} &minus; {lastTrace.problem.subtrahend}
               </span>
             </div>
             <p className="text-small text-ink-soft">
-              GLITCH recorded {lastTrace.events.length} steps, not just the answer.
+              GLITCH recorded {lastTrace.events.length} steps across {traces.length}{" "}
+              {traces.length === 1 ? "question" : "questions"}, not just the answers.
             </p>
           </div>
         ) : (
