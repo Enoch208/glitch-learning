@@ -6,7 +6,12 @@ import bossDefeated from "@/assets/clay/boss-free-ten-defeated.webp";
 import { AppShell } from "@/components/app/app-shell";
 import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
+import { CheckIcon, MinusIcon } from "@phosphor-icons/react/dist/ssr";
+import { ClayIcon } from "@/components/clay/clay-icon";
 import { buildHandoff } from "@/engine/game/handoff";
+import { explanationAccepted } from "@/engine/learning/explanation";
+import { runRule } from "@/engine/rules/interpreter";
+import { cx } from "@/lib/cx";
 import { useBoss } from "@/lib/use-boss";
 import { useRunStore } from "@/store/run-store";
 
@@ -33,6 +38,17 @@ export default function VictoryPage() {
     explanation,
     transfers,
   });
+
+  const explained = boss.traces.filter(
+    (trace) => runRule(boss.rule, trace.problem).answer === trace.finalAnswer,
+  ).length;
+  const checks: [string, boolean][] = [
+    [`Rule fits ${String(explained)} of ${String(boss.traces.length)} answers`, true],
+    ["Predicted the boss", prediction !== null && prediction.predicted === prediction.bossAnswer],
+    ["Built a counterexample", forge !== null],
+    ["Explained the break", explanation !== null && explanationAccepted(explanation)],
+    ["Solved a new problem with the right steps", transfers.some((transfer) => transfer.passed)],
+  ];
 
   const notes: [string, string][] = [
     ["Rule seen", handoff.ruleObserved],
@@ -83,6 +99,24 @@ export default function VictoryPage() {
         <p className="mb-4 font-mono text-caption tracking-widest text-ink-muted uppercase">
           For the next tutor
         </p>
+        <p className="mb-4 text-small text-ink-soft">
+          The game was for the learner. This is the evidence for the tutor.
+        </p>
+        <ul className="mb-5 space-y-2">
+          {checks.map(([label, done]) => (
+            <li key={label} className="flex items-center gap-2 text-small font-bold text-ink">
+              <span
+                className={cx(
+                  "flex size-6 shrink-0 items-center justify-center rounded-full",
+                  done ? "bg-mint-100 text-mint-700" : "bg-surface-sunken text-ink-muted",
+                )}
+              >
+                <ClayIcon glyph={done ? CheckIcon : MinusIcon} size="sm" weight="bold" />
+              </span>
+              {label}
+            </li>
+          ))}
+        </ul>
         <dl className="space-y-3">
           {notes.map(([term, detail]) => (
             <div key={term}>
