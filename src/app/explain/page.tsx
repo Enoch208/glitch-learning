@@ -130,7 +130,7 @@ export default function ExplainPage() {
           type="button"
           onClick={check}
           disabled={selected.length === 0}
-          className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised active:translate-y-px disabled:pointer-events-none disabled:opacity-45"
+          className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px disabled:pointer-events-none disabled:opacity-45"
         >
           Check my ideas
         </button>

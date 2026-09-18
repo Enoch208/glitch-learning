@@ -86,7 +86,7 @@ export default function PlayPage() {
                 cue("boss");
                 router.push("/boss");
               }}
-              className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised active:translate-y-px"
+              className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px"
             >
               Meet the rule
             </button>
@@ -104,7 +104,7 @@ export default function PlayPage() {
               onClick={() => {
                 setReviewing(null);
               }}
-              className="clay-interactive flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed"
+              className="clay-interactive flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed"
             >
               Next question
             </button>
@@ -119,7 +119,7 @@ export default function PlayPage() {
               cue("boss");
               router.push("/boss");
             }}
-            className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised"
+            className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised"
           >
             Meet the rule
           </button>

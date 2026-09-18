@@ -112,7 +112,7 @@ export default function ForgePage() {
           <button
             type="button"
             onClick={test}
-            className="clay-interactive mt-6 h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed"
+            className="clay-interactive mt-6 h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed"
           >
             Test it on the boss
           </button>

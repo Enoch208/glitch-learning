@@ -6,7 +6,7 @@ const base =
 
 const variants = {
   primary:
-    "bg-linear-to-b from-violet-400 to-violet-500 text-surface shadow-clay-raised hover:from-violet-300 hover:to-violet-400 active:shadow-clay-pressed",
+    "bg-linear-to-b from-violet-500 to-violet-600 text-surface shadow-clay-raised hover:from-violet-600 hover:to-violet-600 active:shadow-clay-pressed",
   secondary: "bg-violet-50 text-violet-600 shadow-clay-1 hover:bg-violet-100",
   ghost: "bg-surface text-ink-soft shadow-clay-1 hover:bg-surface-sunken",
 } as const;

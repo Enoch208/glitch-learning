@@ -263,7 +263,7 @@ export function SubtractionCanvas({
         type="button"
         onClick={advance}
         disabled={ctaDisabled}
-        className="clay-interactive mt-6 flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-400 to-violet-500 pr-2 pl-6 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
+        className="clay-interactive mt-6 flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-500 to-violet-600 pr-2 pl-6 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
       >
         <span className="flex-1 text-center">{ctaLabel}</span>
         <span className="flex size-10 items-center justify-center rounded-full bg-surface text-violet-500">

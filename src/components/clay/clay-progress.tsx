@@ -24,7 +24,7 @@ export function ClayProgress({
       aria-valuemax={100}
     >
       <div
-        className="clay-progress-fill h-full rounded-full bg-linear-to-r from-violet-400 to-violet-500 clay-fill-transition"
+        className="clay-progress-fill h-full rounded-full bg-linear-to-r from-violet-500 to-violet-600 clay-fill-transition"
         style={{ "--clay-progress": `${String(percent)}%` } as CSSProperties}
       />
     </div>

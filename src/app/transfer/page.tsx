@@ -104,7 +104,7 @@ export default function TransferPage() {
               setAttempt(2);
               setStatus("working");
             }}
-            className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised active:translate-y-px"
+            className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px"
           >
             Try another one
           </button>

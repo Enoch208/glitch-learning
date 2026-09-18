@@ -40,9 +40,9 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section className="relative mb-8 overflow-hidden rounded-xl bg-linear-to-br from-violet-400 to-violet-600 py-5 pr-28 pl-5 shadow-clay-2">
+      <section className="relative mb-8 overflow-hidden rounded-xl bg-linear-to-br from-violet-500 to-violet-600 py-5 pr-28 pl-5 shadow-clay-2">
         <p className="text-small font-bold text-surface">Today&rsquo;s run</p>
-        <p className="mt-1 mb-4 text-caption text-violet-100">
+        <p className="mt-1 mb-4 text-caption text-violet-50">
           {done >= totalStages
             ? "Run complete"
             : `Stage ${String(activeStage)} of ${String(totalStages)}`}{" "}

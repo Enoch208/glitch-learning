@@ -38,7 +38,7 @@ export default function JudgesPage() {
       <button
         type="button"
         onClick={start}
-        className="clay-interactive h-16 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 text-body font-bold text-surface shadow-clay-raised active:translate-y-px"
+        className="clay-interactive h-16 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 text-body font-bold text-surface shadow-clay-raised active:translate-y-px"
       >
         Start the 90 second run
       </button>

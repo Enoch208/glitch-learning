@@ -203,7 +203,7 @@ export function PlaceValueCanvas() {
           type="button"
           onClick={addEight}
           disabled={stage !== "ready"}
-          className="clay-interactive inline-flex h-12 items-center justify-center rounded-md bg-linear-to-b from-violet-400 to-violet-500 px-5 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
+          className="clay-interactive inline-flex h-12 items-center justify-center rounded-md bg-linear-to-b from-violet-500 to-violet-600 px-5 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
         >
           Add 8 ones
         </button>
