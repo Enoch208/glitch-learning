@@ -17,7 +17,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "eval": "vitest run --config vitest.eval.config.ts",
-    "eval:model": "vitest run --config vitest.live.config.ts"
+    "eval:model": "vitest run --config vitest.live.config.ts",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm eval"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",

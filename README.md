@@ -153,6 +153,7 @@ The key is read on the server only and never sent to the browser.
 | `pnpm test -t "<name>"` | Run tests whose name matches                       |
 | `pnpm eval`             | Regenerate `evals/results/diagnosis.json`          |
 | `pnpm eval:model`       | Check the live model path (needs `OPENAI_API_KEY`) |
+| `pnpm verify`           | Lint, typecheck, test, build and eval in one go    |
 | `pnpm lint`             | Lint, including the no-comments rule               |
 | `pnpm typecheck`        | Type-check                                         |
 | `pnpm format`           | Format with Prettier                               |
