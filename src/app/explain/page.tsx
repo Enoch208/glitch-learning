@@ -48,7 +48,7 @@ export default function ExplainPage() {
 
   const settle = (evaluation: ExplanationEvaluation, chosen: string[]) => {
     setResult(evaluation);
-    if (explanationAccepted(evaluation) || evaluation.followUp === null) {
+    if (explanationAccepted(evaluation)) {
       recordExplanation({
         selected: chosen,
         missing: evaluation.conceptsMissing,
@@ -59,7 +59,7 @@ export default function ExplainPage() {
       completeStages(["explain"]);
       setFinished(true);
     } else {
-      setAttempt(2);
+      setAttempt((current) => current + 1);
     }
   };
 
@@ -132,9 +132,7 @@ export default function ExplainPage() {
             className="rounded-md bg-mint-100 p-4 text-small font-bold text-mint-700"
             aria-live="polite"
           >
-            {result !== null && explanationAccepted(result)
-              ? "Those ideas are exactly why the rule broke."
-              : "Let's see those ideas in action."}
+            Those ideas are exactly why the rule broke.
           </section>
           <PrimaryCta href="/transfer">Prove it</PrimaryCta>
         </>

@@ -65,7 +65,8 @@ export function evaluateJudgement(
 ): ExplanationEvaluation {
   const conceptsPresent = requiredConceptIds.filter((id) => present.includes(id));
   const conceptsMissing = requiredConceptIds.filter((id) => !present.includes(id));
-  const firstMissing = conceptStatements.find((statement) => statement.id === conceptsMissing[0]);
+  const hintedId = conceptsMissing[Math.min(attempt - 1, conceptsMissing.length - 1)];
+  const hinted = conceptStatements.find((statement) => statement.id === hintedId);
   const needsMore = conceptsMissing.length > 0 || contradiction;
 
   return {
@@ -73,10 +74,9 @@ export function evaluateJudgement(
     conceptsMissing,
     contradiction,
     coverage: conceptsPresent.length / requiredConceptIds.length,
-    followUp:
-      attempt === 1 && needsMore
-        ? (firstMissing?.followUp ?? "One of your ideas is something the boss would agree with.")
-        : null,
+    followUp: needsMore
+      ? (hinted?.followUp ?? "One of your ideas is something the boss would agree with.")
+      : null,
   };
 }
 
@@ -87,5 +87,7 @@ export function evaluateConcepts(selected: string[], attempt: number): Explanati
   return evaluateJudgement(selected, contradiction, attempt);
 }
 
-export const explanationAccepted = (evaluation: ExplanationEvaluation): boolean =>
-  !evaluation.contradiction && evaluation.coverage >= ACCEPTED_COVERAGE;
+export const explanationAccepted = (evaluation: {
+  coverage: number;
+  contradiction: boolean;
+}): boolean => !evaluation.contradiction && evaluation.coverage >= ACCEPTED_COVERAGE;

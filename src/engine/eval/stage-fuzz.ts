@@ -56,7 +56,13 @@ function randomEvidence(random: Random): RunEvidence {
     explanation:
       random() < 0.5
         ? null
-        : { selected: [], missing: [], coverage: 1, contradiction: false, followUpUsed: false },
+        : {
+            selected: [],
+            missing: [],
+            coverage: random() < 0.5 ? 0.5 : 1,
+            contradiction: random() < 0.25,
+            followUpUsed: false,
+          },
     transfers:
       transferChoice === 0
         ? []
@@ -78,7 +84,10 @@ const independentlyValid = (completed: string[], evidence: RunEvidence): boolean
     (!has("boss") || evidence.prediction !== null) &&
     (!has("forge") ||
       (evidence.forge !== null && evidence.forge.glitchAnswer !== evidence.forge.truthAnswer)) &&
-    (!has("explain") || evidence.explanation !== null) &&
+    (!has("explain") ||
+      (evidence.explanation !== null &&
+        evidence.explanation.coverage >= 0.75 &&
+        !evidence.explanation.contradiction)) &&
     (!has("transfer") || evidence.transfers.some((transfer) => transfer.passed))
   );
 };

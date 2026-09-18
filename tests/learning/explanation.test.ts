@@ -50,7 +50,14 @@ describe("explanation by concept selection", () => {
     expect(evaluateJudgement(requiredConceptIds, true, 1).contradiction).toBe(true);
   });
 
-  test("there is only ever one follow up", () => {
-    expect(evaluateConcepts([], 2).followUp).toBeNull();
+  test("a weak explanation keeps getting a hint instead of passing", () => {
+    const second = evaluateConcepts([], 2);
+    expect(explanationAccepted(second)).toBe(false);
+    expect(second.followUp).not.toBeNull();
+    expect(second.followUp).not.toBe(evaluateConcepts([], 1).followUp);
+  });
+
+  test("a good explanation needs no follow up", () => {
+    expect(evaluateConcepts(requiredConceptIds, 2).followUp).toBeNull();
   });
 });

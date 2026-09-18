@@ -1,3 +1,4 @@
+import { explanationAccepted } from "@/engine/learning/explanation";
 import { observationFromTrace } from "@/engine/learner/observation";
 import { inducedRuleVerified } from "@/engine/rules/induction";
 import type { RunEvidence } from "./evidence";
@@ -28,7 +29,7 @@ const guards: Record<string, (evidence: RunEvidence) => boolean> = {
   boss: (evidence) => evidence.prediction !== null,
   forge: (evidence) =>
     evidence.forge !== null && evidence.forge.glitchAnswer !== evidence.forge.truthAnswer,
-  explain: (evidence) => evidence.explanation !== null,
+  explain: (evidence) => evidence.explanation !== null && explanationAccepted(evidence.explanation),
   transfer: (evidence) => evidence.transfers.some((transfer) => transfer.passed),
 };
 
