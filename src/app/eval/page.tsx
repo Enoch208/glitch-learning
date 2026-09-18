@@ -16,10 +16,17 @@ const strategyNames: Partial<Record<string, string>> = {
   "answer-only": "Answers only, no steps",
 };
 
+const kindNames: Record<string, string> = {
+  "mixed-rules": "Mixed rules, one per problem",
+  "random-answers": "Random answers",
+  careless: "Careless, slips half the time",
+};
+
 const knownLimits = [
   "The synthetic learners follow the same four rules the model knows, so these numbers show the machinery works, not how accurate it is with real children.",
   "Free Ten and correct regrouping give the same answer when no regrouping is needed. GLITCH will not wake a boss until it has seen two problems where they disagree.",
   "The model is slower than intended: finding a new rule takes several seconds, not the 2.5 second goal.",
+  "A learner who switches between rules problem by problem still gets a boss most of the time: the gate checks that a rule fits two telling answers, not that it explains the rest.",
   "The model eval is small: ten rule-finding runs over two rules and nine hand-labelled explanations.",
 ];
 
@@ -59,6 +66,20 @@ export default function EvalPage() {
           none. Wrong includes giving a boss to a learner with no misconception. q is the median
           number of questions before a boss appeared.
         </p>
+      </InstrumentSection>
+
+      <InstrumentSection title="No boss when no single rule fits">
+        {results.abstention.map((report) => {
+          const bossed = report.learners - report.abstained;
+          return (
+            <Reading
+              key={report.kind}
+              label={kindNames[report.kind] ?? report.kind}
+              value={`${String(report.abstained)} of ${String(report.learners)}`}
+              note={bossed === 0 ? "never given a boss" : `${String(bossed)} given a boss`}
+            />
+          );
+        })}
       </InstrumentSection>
 
       <InstrumentSection title="Reliability">

@@ -29,7 +29,7 @@ export type StrategyReport = {
 
 export type EvaluationOptions = { learnersPerRule: number; maxQuestions: number; seed: number };
 
-type Verdict = { diagnosis: string | null; questions: number };
+export type Verdict = { diagnosis: string | null; questions: number };
 
 const POOL_SIZE = 30;
 const LOOKUP_VOTES = 2;
@@ -37,8 +37,10 @@ const LOOKUP_VOTES = 2;
 const pool = (random: Random): SubtractionProblem[] =>
   Array.from({ length: POOL_SIZE }, () => randomProblem(random));
 
-function modelled(
-  learner: Hypothesis,
+export type Observe = (problem: SubtractionProblem) => Observation;
+
+export function diagnoseWith(
+  observe: Observe,
   random: Random,
   maxQuestions: number,
   config: DiagnosticConfig,
@@ -52,7 +54,7 @@ function modelled(
     const [fallback] = candidates;
     if (fallback === undefined) break;
     const problem = chooseActively ? selectNextProblem(posterior, candidates) : fallback;
-    observations.push(simulateObservation(learner, problem, random));
+    observations.push(observe(problem));
 
     if (bossReady(observations, config)) {
       return {
@@ -64,6 +66,21 @@ function modelled(
 
   return { diagnosis: null, questions: maxQuestions };
 }
+
+const modelled = (
+  learner: Hypothesis,
+  random: Random,
+  maxQuestions: number,
+  config: DiagnosticConfig,
+  chooseActively: boolean,
+): Verdict =>
+  diagnoseWith(
+    (problem) => simulateObservation(learner, problem, random),
+    random,
+    maxQuestions,
+    config,
+    chooseActively,
+  );
 
 function lookup(learner: Hypothesis, random: Random, maxQuestions: number): Verdict {
   const votes = new Map<string, number>();

@@ -3,6 +3,7 @@
 - **The model is slower than intended.** Finding a new rule takes 5.5 s at the median and 9.7 s at P95, against a 2.5 s goal. Reading an explanation takes 2.7 s at the median. The run shows that it is testing possible rules while it waits.
 - **The model eval is small.** 10 rule-finding runs over two rules and 9 hand-labelled explanations. It missed one explanation: "I gave the ones ten more but I forgot the ten had to come from somewhere" was not read as saying the tens go down.
 - **Different rules can fit the same evidence.** If every problem seen needs regrouping, a rule that always writes zero in the ones fits as well as one that writes zero only when stuck. GLITCH accepts a proposed rule only if it reproduces every step, but it does not yet ask an extra question to separate two proposed rules that both fit.
+- **A learner who switches rules often still gets a boss.** Given learners who pick a different known rule for each problem, GLITCH woke a boss for 321 of 500. Learners answering at random got one 21 times in 500, and careless learners never did.
 - **Boss dialogue is prewritten**, not generated.
 - **Evaluated on synthetic learners only.** The learners follow the same rules the model knows, so the evaluation shows the machinery works, not accuracy with real children. No real learners have used GLITCH.
 - **Three rules.** The candidate set is correct regrouping, Free Ten, Flip Flop and careless slips. A learner following some other rule will usually end with no boss.

@@ -33,6 +33,18 @@ Everything here is produced by `pnpm eval`, which writes `evals/results/diagnosi
 - The comparison between strategies is fair: every strategy faced the same learners from the same seeds.
 - Recorded steps matter mostly for avoiding false accusations. Answers alone reached a boss as quickly but accused two learners who had no misconception.
 
+## No boss when no single rule fits
+
+A boss should appear only when one rule explains the learner. The same run gives GLITCH 500 learners of each kind below, none of whom follows a single rule, and counts how often it declines to wake a boss within 6 questions.
+
+| Learner                                                        | No boss    | Free Ten | Flip Flop |
+| -------------------------------------------------------------- | ---------- | -------- | --------- |
+| Careless: correct regrouping, a random slip on half of answers | 500 of 500 | 0        | 0         |
+| Random answers: steps from a random rule, answer at random     | 479 of 500 | 13       | 8         |
+| Mixed rules: a different known rule for each problem           | 179 of 500 | 189      | 132       |
+
+The mixed-rule result is a real weakness. The gate wakes a boss as soon as two answers disagree with correct regrouping and fit the same misconception, and a learner who uses Free Ten on a third of problems often meets that within six questions. It does not ask whether the rule also explains the problems the learner got right by another route. See the honest failure below.
+
 ## Reliability
 
 | Check                            | Result          | Checked                                                                          |
@@ -89,3 +101,5 @@ With the model unavailable, rule-finding falls back to the known rules and Free 
 ## An honest failure
 
 Free Ten and correct regrouping give the same answer whenever a problem needs no regrouping. A learner who only ever sees such problems cannot be told apart. GLITCH therefore refuses to wake a boss until it has seen two problems where the leading misconception and correct regrouping disagree.
+
+A second failure comes from the noise evaluation above: a learner who switches between rules problem by problem gets a boss 64% of the time. A boss for a rule the learner uses only sometimes is not wrong about those answers, but GLITCH says the rule explains the learner when it explains only part of them. The boss page does show how many of the learner's answers the rule explains, so the partial fit is visible, but the gate itself does not yet hold back.
