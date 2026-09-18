@@ -114,7 +114,7 @@ export function SubtractionCanvas({
   }, [answer, submitted, onComplete]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex w-full flex-col items-center">
       <div className="flex flex-col items-end gap-1">
         <div className="flex gap-3">
           <DigitCell
@@ -182,7 +182,7 @@ export function SubtractionCanvas({
         type="button"
         onClick={submit}
         disabled={answer === null || submitted}
-        className="clay-interactive mt-8 inline-flex h-12 items-center justify-center rounded-md bg-linear-to-b from-violet-400 to-violet-500 px-7 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
+        className="clay-interactive mt-8 flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-400 to-violet-500 px-6 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
       >
         {submitted ? "Answer recorded" : "Done"}
       </button>

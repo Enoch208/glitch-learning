@@ -13,6 +13,8 @@ const collectTsxFiles = (root: string): string[] => {
 
 const files = sourceRoots.flatMap(collectTsxFiles);
 
+const renderedCanvasColour = "#f1edfa";
+
 const offendersMatching = (pattern: RegExp) =>
   files
     .filter((file) => pattern.test(readFileSync(file, "utf8")))
@@ -25,6 +27,14 @@ describe("design token discipline", () => {
 
   test("no raw hex colours outside the theme", () => {
     expect(offendersMatching(/#[0-9a-fA-F]{3,8}\b/)).toEqual([]);
+  });
+
+  test("the browser chrome colour is the only literal, and it matches the canvas", () => {
+    const brand = readFileSync("src/lib/brand.ts", "utf8");
+    const literals = brand.match(/#[0-9a-fA-F]{3,8}\b/g) ?? [];
+
+    expect(literals).toHaveLength(1);
+    expect(literals[0]?.toLowerCase()).toBe(renderedCanvasColour);
   });
 
   test("no raw rgba or hsl colours", () => {
