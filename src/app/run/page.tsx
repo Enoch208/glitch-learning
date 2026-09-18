@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeftIcon, ClockIcon, SkullIcon, StackIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, ClockIcon, MagnifyingGlassIcon, SwordIcon } from "@phosphor-icons/react/dist/ssr";
 import labBackdrop from "@/assets/clay/lab-backdrop.webp";
 import bossDefeated from "@/assets/clay/boss-free-ten-defeated.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
@@ -19,9 +19,9 @@ import { useHydrated } from "@/lib/use-hydrated";
 import { stageStatusFor, useRunStore } from "@/store/run-store";
 
 const meta: { glyph: ClayGlyph; label: string }[] = [
-  { glyph: StackIcon, label: "7 stages" },
+  { glyph: MagnifyingGlassIcon, label: "Find it" },
+  { glyph: SwordIcon, label: "Break it" },
   { glyph: ClockIcon, label: "~6 min" },
-  { glyph: SkullIcon, label: "1 boss" },
 ];
 
 export default function RunPage() {
