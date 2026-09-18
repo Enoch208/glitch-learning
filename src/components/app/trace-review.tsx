@@ -1,40 +1,41 @@
+"use client";
+
+import { PlaceValueTray } from "@/components/canvas/place-value-tray";
+import { observationFromTrace } from "@/engine/learner/observation";
 import type { ReasoningTrace } from "@/events/trace";
 
-const describeEvent = (event: ReasoningTrace["events"][number]): string => {
-  switch (event.type) {
-    case "borrow":
-      return "brought ten ones across";
-    case "digit_edit":
-      return `changed the ${event.place} digit to ${String(event.value)}`;
-    case "column_result":
-      return `wrote ${String(event.value)} in the ${event.place}`;
-    case "answer":
-      return `answered ${String(event.value)}`;
-    case "hint":
-      return `asked for hint ${String(event.level)}`;
-  }
-};
+function setupLine(startTens: number, startOnes: number, tensTop: number, onesTop: number): string {
+  const extraOnes = onesTop > startOnes;
+  const tenLeft = tensTop < startTens;
+
+  if (extraOnes && tenLeft) return "A ten became ten ones.";
+  if (extraOnes) return "Ten ones appeared. The tens stayed.";
+  if (tenLeft) return "A ten left. The ones stayed.";
+  return "The top row stayed the same.";
+}
 
 export function TraceReview({ trace }: { trace: ReasoningTrace }) {
+  const startOnes = trace.problem.minuend % 10;
+  const startTens = Math.floor(trace.problem.minuend / 10);
+  const { steps } = observationFromTrace(trace);
+
   return (
-    <section className="rounded-xl bg-surface p-5 shadow-clay-1">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-small font-bold text-ink-soft">What GLITCH saw</h2>
-        <span className="font-mono text-caption text-ink-muted">
-          {trace.problem.minuend} &minus; {trace.problem.subtrahend}
-        </span>
-      </div>
-      <ol className="space-y-2">
-        {trace.events.map((event, index) => (
-          <li
-            key={`${event.type}-${String(index)}`}
-            className="flex gap-3 font-mono text-caption text-ink-soft"
-          >
-            <span className="text-ink-muted">{index + 1}</span>
-            <span>{describeEvent(event)}</span>
-          </li>
-        ))}
-      </ol>
+    <section className="rounded-xl bg-surface p-5 shadow-clay-2">
+      <p className="text-small font-bold text-violet-500">You finished this one</p>
+      <p className="mt-2 font-mono text-h2 text-ink tabular-nums">
+        {trace.problem.minuend} &minus; {trace.problem.subtrahend}
+      </p>
+      <PlaceValueTray
+        tens={steps.tensTop}
+        ones={steps.onesTop}
+        startOnes={startOnes}
+        tenBroken={steps.tensTop < startTens}
+        className="mt-4"
+      />
+      <p className="mt-4 text-body font-bold text-ink">
+        {setupLine(startTens, startOnes, steps.tensTop, steps.onesTop)}
+      </p>
+      <p className="mt-2 text-body text-ink-soft">You wrote {String(trace.finalAnswer)}.</p>
     </section>
   );
 }

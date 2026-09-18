@@ -24,6 +24,7 @@ export default function PlayPage() {
   const storedTraces = useRunStore((state) => state.traces);
   const recordTrace = useRunStore((state) => state.recordTrace);
   const completeStages = useRunStore((state) => state.completeStages);
+  const resetRun = useRunStore((state) => state.resetRun);
   const guidedCase = useRunStore((state) => state.guidedCase);
   const [reviewing, setReviewing] = useState<ReasoningTrace | null>(null);
 
@@ -32,6 +33,18 @@ export default function PlayPage() {
   const outcome = sessionOutcome(observations);
   const problem = nextProblem(observations);
   const asked = traces.length;
+  const runOver = outcome.kind !== "continue";
+  const filled = Math.min(asked, MAX_DIAGNOSTIC_QUESTIONS);
+  const turnLabel = runOver
+    ? "All done"
+    : reviewing === null
+      ? "Your turn"
+      : "You finished this one";
+
+  const playAgain = () => {
+    setReviewing(null);
+    resetRun();
+  };
 
   const finish = (trace: ReasoningTrace) => {
     const result = sessionOutcome([...observations, observationFromTrace(trace)]);
@@ -43,9 +56,6 @@ export default function PlayPage() {
     );
     setReviewing(trace);
   };
-
-  const current = reviewing === null ? asked + 1 : asked;
-  const questionLabel = `Question ${String(current)} of up to ${String(MAX_DIAGNOSTIC_QUESTIONS)}`;
 
   return (
     <AppShell className="px-5 pt-6">
@@ -64,16 +74,16 @@ export default function PlayPage() {
                 key={index}
                 className={cx(
                   "h-1.5 flex-1 rounded-full",
-                  index < asked
+                  index < filled
                     ? "bg-mint-500"
-                    : index === asked && reviewing === null
+                    : !runOver && reviewing === null && index === filled
                       ? "bg-violet-500"
                       : "bg-violet-100",
                 )}
               />
             ))}
           </div>
-          <p className="mt-2 text-caption text-ink-muted">{questionLabel}</p>
+          <p className="mt-2 text-caption text-ink-muted">{turnLabel}</p>
         </div>
       </header>
 
@@ -92,7 +102,7 @@ export default function PlayPage() {
               See what woke up
             </button>
           ) : outcome.kind === "no-rule-found" ? (
-            <NoRuleResolution observations={observations} />
+            <NoRuleResolution observations={observations} onPlayAgain={playAgain} />
           ) : (
             <button
               type="button"
@@ -101,7 +111,7 @@ export default function PlayPage() {
               }}
               className="clay-interactive flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed"
             >
-              Next question
+              Another one
             </button>
           )}
         </div>
@@ -122,7 +132,7 @@ export default function PlayPage() {
           </button>
         </section>
       ) : outcome.kind === "no-rule-found" ? (
-        <NoRuleResolution observations={observations} />
+        <NoRuleResolution observations={observations} onPlayAgain={playAgain} />
       ) : (
         <section className="rounded-xl bg-surface p-5 shadow-clay-2">
           <SubtractionCanvas

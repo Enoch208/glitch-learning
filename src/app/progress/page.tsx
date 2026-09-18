@@ -46,8 +46,9 @@ export default function ProgressPage() {
               </span>
             </div>
             <p className="text-small text-ink-soft">
-              GLITCH recorded {lastTrace.events.length} steps across {traces.length}{" "}
-              {traces.length === 1 ? "question" : "questions"}, not just the answers.
+              {traces.length === 1
+                ? "One puzzle so far."
+                : `${String(traces.length)} puzzles so far.`}
             </p>
           </div>
         ) : (

@@ -55,6 +55,7 @@ function TrapRow({
         startOnes={startOnes}
         tenBroken={shown && run.tensTop < startTens}
         glitching={glitching}
+        hideWorth
         className="mt-2 bg-surface"
       />
       {shown && flipped ? (

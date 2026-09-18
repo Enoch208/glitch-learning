@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { PrimaryCta } from "@/components/app/primary-cta";
+import { ClayIcon } from "@/components/clay/clay-icon";
 import type { Observation } from "@/engine/learner/observation";
 import { solveByColumns } from "@/engine/math/truth";
 import { parseRule } from "@/engine/rules/ast";
@@ -14,7 +16,61 @@ type Status = "testing" | "found" | "none";
 
 const MIN_WRONG_FOR_INDUCTION = 2;
 
-export function NoRuleResolution({ observations }: { observations: Observation[] }) {
+function EndCard({
+  tone,
+  title,
+  detail,
+  onPlayAgain,
+}: {
+  tone: "mint" | "peach";
+  title: string;
+  detail: string;
+  onPlayAgain: () => void;
+}) {
+  return (
+    <>
+      <section
+        className={
+          tone === "mint"
+            ? "rounded-xl bg-mint-100 p-5 text-center"
+            : "rounded-xl bg-peach-100 p-5 text-center"
+        }
+      >
+        {tone === "mint" ? (
+          <span className="mb-3 inline-flex size-14 items-center justify-center rounded-full bg-surface text-mint-700 shadow-clay-1">
+            <ClayIcon glyph={CheckCircleIcon} size="lg" weight="fill" />
+          </span>
+        ) : null}
+        <p
+          className={
+            tone === "mint"
+              ? "text-body font-bold text-mint-700"
+              : "text-body font-bold text-peach-700"
+          }
+        >
+          {title}
+        </p>
+        <p className="mt-1 text-small text-ink-soft">{detail}</p>
+      </section>
+      <button
+        type="button"
+        onClick={onPlayAgain}
+        className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px"
+      >
+        Try more problems
+      </button>
+      <PrimaryCta href="/">Back home</PrimaryCta>
+    </>
+  );
+}
+
+export function NoRuleResolution({
+  observations,
+  onPlayAgain,
+}: {
+  observations: Observation[];
+  onPlayAgain: () => void;
+}) {
   const router = useRouter();
   const cue = useCue();
   const recordInduced = useRunStore((state) => state.recordInduced);
@@ -60,13 +116,12 @@ export function NoRuleResolution({ observations }: { observations: Observation[]
 
   if (!worthAsking) {
     return (
-      <>
-        <section className="rounded-xl bg-mint-100 p-5 text-center">
-          <p className="text-body font-bold text-mint-700">No rule to break this time.</p>
-          <p className="mt-1 text-small text-ink-soft">Your regrouping held up every time.</p>
-        </section>
-        <PrimaryCta href="/">Back home</PrimaryCta>
-      </>
+      <EndCard
+        tone="mint"
+        title="No glitch this time."
+        detail="You regrouped each one. Nothing hid in the steps."
+        onPlayAgain={onPlayAgain}
+      />
     );
   }
 
@@ -76,9 +131,7 @@ export function NoRuleResolution({ observations }: { observations: Observation[]
         <p className="animate-pulse text-body font-bold text-violet-600">
           Testing possible rules&hellip;
         </p>
-        <p className="mt-1 text-small text-ink-muted">
-          None of GLITCH&rsquo;s rules fit your steps yet.
-        </p>
+        <p className="mt-1 text-small text-ink-muted">Looking for a pattern in your steps.</p>
       </section>
     );
   }
@@ -106,12 +159,11 @@ export function NoRuleResolution({ observations }: { observations: Observation[]
   }
 
   return (
-    <>
-      <section className="rounded-xl bg-peach-100 p-5 text-center" aria-live="polite">
-        <p className="text-body font-bold text-peach-700">No single rule explains these steps.</p>
-        <p className="mt-1 text-small text-ink-soft">Your tutor can go through them with you.</p>
-      </section>
-      <PrimaryCta href="/">Back home</PrimaryCta>
-    </>
+    <EndCard
+      tone="peach"
+      title="No single glitch showed up."
+      detail="The steps did not match one rule. You can try more."
+      onPlayAgain={onPlayAgain}
+    />
   );
 }
