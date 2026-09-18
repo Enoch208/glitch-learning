@@ -7,7 +7,7 @@ import { PrimaryCta } from "@/components/app/primary-cta";
 import { StageHeader } from "@/components/app/stage-header";
 import { SubtractionCanvas } from "@/components/canvas/subtraction-canvas";
 import { BossCrack } from "@/components/forge/boss-crack";
-import { transferPassed, transferProblem } from "@/engine/game/transfer";
+import { checkTransfer, transferProblem } from "@/engine/game/transfer";
 import { solveByColumns } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
 import { useBoss } from "@/lib/use-boss";
@@ -25,6 +25,7 @@ export default function TransferPage() {
   const completeStages = useRunStore((state) => state.completeStages);
   const [attempt, setAttempt] = useState(1);
   const [status, setStatus] = useState<Status>("working");
+  const [answerOnly, setAnswerOnly] = useState(false);
 
   const problem = useMemo(() => {
     if (boss === null) return null;
@@ -46,7 +47,8 @@ export default function TransferPage() {
   }
 
   const finish = (trace: ReasoningTrace) => {
-    const passed = transferPassed(problem, trace.finalAnswer);
+    const { passed, answerRight } = checkTransfer(trace);
+    setAnswerOnly(answerRight && !passed);
     recordTransfer({ problem, answer: trace.finalAnswer, passed });
     if (passed) {
       completeStages(["transfer"]);
@@ -105,7 +107,11 @@ export default function TransferPage() {
       ) : status === "remediate" ? (
         <>
           <section className="rounded-xl bg-surface p-5 shadow-clay-1">
-            <p className="text-small font-bold text-ink">Here is how the ten moves.</p>
+            <p className="text-small font-bold text-ink">
+              {answerOnly
+                ? "Your answer was right. Now show the ten moving with the pieces."
+                : "Here is how the ten moves."}
+            </p>
             <ol className="mt-3 space-y-2 text-small text-ink-soft">
               <li>
                 One ten turns into ten ones, so {problem.minuend % 10} becomes {steps.onesTop}.
