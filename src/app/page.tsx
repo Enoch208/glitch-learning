@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <AppShell className="px-5 pt-8">
       <header className="mb-6 flex items-center gap-3">
-        <span className="flex size-12 items-center justify-center rounded-full bg-violet-100 text-h2 font-bold text-violet-600">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-300 to-violet-500 text-h2 font-bold text-surface ring-2 ring-surface shadow-clay-1">
           L
         </span>
         <div>

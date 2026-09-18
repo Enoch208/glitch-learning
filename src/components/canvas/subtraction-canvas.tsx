@@ -1,59 +1,86 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
+import { ClayIcon } from "@/components/clay/clay-icon";
 import { createTraceRecorder } from "@/engine/trace/recorder";
 import type { SubtractionProblem } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
 import { cx } from "@/lib/cx";
 
+type Step = "look" | "setup" | "answer" | "done";
 type Place = "ones" | "tens";
 
+const steps: Step[] = ["look", "setup", "answer"];
 const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const onesOf = (value: number) => value % 10;
 const tensOf = (value: number) => Math.floor(value / 10);
 
+const prompts: Record<Step, string> = {
+  look: "Look at the numbers.",
+  setup: "Change the top row if you need to.",
+  answer: "Now write your answer.",
+  done: "Answer recorded.",
+};
+
 function DigitCell({
   value,
   original,
-  onClick,
-  label,
-  showMarkSlot = false,
+  showMark,
 }: {
   value: number;
   original: number;
-  onClick?: (() => void) | undefined;
-  label?: string | undefined;
-  showMarkSlot?: boolean;
+  showMark?: boolean;
 }) {
-  const changed = value !== original;
-  const interactive = onClick !== undefined;
-
   return (
-    <div className="flex flex-col items-center">
-      {showMarkSlot ? (
+    <span className="flex flex-col items-center">
+      {showMark === true ? (
         <span
           className={cx(
             "h-6 font-mono text-caption text-ink-muted",
-            changed ? "line-through" : "opacity-0",
+            value === original ? "opacity-0" : "line-through",
           )}
         >
           {original}
         </span>
       ) : null}
-      {interactive ? (
-        <button
-          type="button"
-          onClick={onClick}
-          aria-label={label}
-          className="clay-interactive flex h-16 w-14 items-center justify-center rounded-md bg-surface text-h1 text-ink shadow-clay-1 hover:bg-violet-50 active:translate-y-px"
-        >
-          {value}
-        </button>
-      ) : (
-        <span className="flex h-16 w-14 items-center justify-center text-h1 text-ink">{value}</span>
+      <span className="flex h-16 w-14 items-center justify-center text-h1 text-ink tabular-nums">
+        {value}
+      </span>
+    </span>
+  );
+}
+
+function AdjustRow({
+  label,
+  applied,
+  onToggle,
+}: {
+  label: string;
+  applied: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={applied}
+      className={cx(
+        "clay-interactive flex h-14 w-full items-center gap-3 rounded-md px-4 text-left text-small font-bold shadow-clay-1 active:translate-y-px",
+        applied ? "bg-mint-100 text-mint-700" : "bg-surface text-ink-soft",
       )}
-    </div>
+    >
+      <span
+        className={cx(
+          "flex size-6 shrink-0 items-center justify-center rounded-full",
+          applied ? "bg-mint-500 text-surface" : "ring-2 ring-violet-100",
+        )}
+      >
+        {applied ? <ClayIcon glyph={CheckIcon} size="sm" weight="bold" /> : null}
+      </span>
+      {label}
+    </button>
   );
 }
 
@@ -65,40 +92,48 @@ export function SubtractionCanvas({
   onComplete?: ((trace: ReasoningTrace) => void) | undefined;
 }) {
   const recorder = useRef(createTraceRecorder(problem));
-  const [topTens, setTopTens] = useState(() => tensOf(problem.minuend));
-  const [topOnes, setTopOnes] = useState(() => onesOf(problem.minuend));
+  const [step, setStep] = useState<Step>("look");
+  const [gaveTenOnes, setGaveTenOnes] = useState(false);
+  const [tookOneTen, setTookOneTen] = useState(false);
   const [results, setResults] = useState<Record<Place, number | null>>({ ones: null, tens: null });
-  const [activePlace, setActivePlace] = useState<Place | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [activePlace, setActivePlace] = useState<Place>("ones");
 
   const startTens = tensOf(problem.minuend);
   const startOnes = onesOf(problem.minuend);
-  const bottomTens = tensOf(problem.subtrahend);
-  const bottomOnes = onesOf(problem.subtrahend);
+  const topOnes = gaveTenOnes ? startOnes + 10 : startOnes;
+  const topTens = tookOneTen ? startTens - 1 : startTens;
 
-  const borrowTen = useCallback(() => {
-    if (submitted || topOnes >= 10) return;
-    const next = topOnes + 10;
-    recorder.current.record({ type: "borrow" });
-    recorder.current.record({ type: "digit_edit", place: "ones", value: next });
-    setTopOnes(next);
-  }, [submitted, topOnes]);
+  const toggleTenOnes = useCallback(() => {
+    const next = !gaveTenOnes;
+    if (next) recorder.current.record({ type: "borrow" });
+    recorder.current.record({
+      type: "digit_edit",
+      place: "ones",
+      value: next ? startOnes + 10 : startOnes,
+    });
+    setGaveTenOnes(next);
+  }, [gaveTenOnes, startOnes]);
 
-  const decrementTens = useCallback(() => {
-    if (submitted || topTens <= 0) return;
-    const next = topTens - 1;
-    recorder.current.record({ type: "digit_edit", place: "tens", value: next });
-    setTopTens(next);
-  }, [submitted, topTens]);
+  const toggleOneTen = useCallback(() => {
+    const next = !tookOneTen;
+    recorder.current.record({
+      type: "digit_edit",
+      place: "tens",
+      value: next ? startTens - 1 : startTens,
+    });
+    setTookOneTen(next);
+  }, [tookOneTen, startTens]);
 
   const chooseDigit = useCallback(
     (digit: number) => {
-      if (activePlace === null || submitted) return;
       recorder.current.record({ type: "column_result", place: activePlace, value: digit });
-      setResults((current) => ({ ...current, [activePlace]: digit }));
-      setActivePlace(null);
+      setResults((current) => {
+        const updated = { ...current, [activePlace]: digit };
+        setActivePlace(updated.ones === null ? "ones" : "tens");
+        return updated;
+      });
     },
-    [activePlace, submitted],
+    [activePlace],
   );
 
   const answer = useMemo(() => {
@@ -106,38 +141,46 @@ export function SubtractionCanvas({
     return results.tens * 10 + results.ones;
   }, [results]);
 
-  const submit = useCallback(() => {
-    if (answer === null || submitted) return;
-    recorder.current.record({ type: "answer", value: answer });
-    setSubmitted(true);
-    onComplete?.(recorder.current.complete(answer));
-  }, [answer, submitted, onComplete]);
+  const advance = useCallback(() => {
+    if (step === "look") {
+      setStep("setup");
+      return;
+    }
+    if (step === "setup") {
+      setStep("answer");
+      return;
+    }
+    if (step === "answer" && answer !== null) {
+      recorder.current.record({ type: "answer", value: answer });
+      setStep("done");
+      onComplete?.(recorder.current.complete(answer));
+    }
+  }, [step, answer, onComplete]);
+
+  const stepNumber = step === "done" ? steps.length : steps.indexOf(step) + 1;
+  const ctaLabel = step === "answer" ? "Done" : step === "done" ? "Answer recorded" : "Next";
+  const ctaDisabled = step === "done" || (step === "answer" && answer === null);
 
   return (
-    <div className="flex w-full flex-col items-center">
-      <div className="flex flex-col items-center gap-1">
+    <div className="flex w-full flex-col">
+      <div className="mb-1 flex items-baseline justify-between gap-3">
+        <p className="text-body font-bold text-ink">{prompts[step]}</p>
+        <span className="font-mono text-caption text-ink-muted">
+          {stepNumber}/{steps.length}
+        </span>
+      </div>
+
+      <div className="my-5 flex flex-col items-center gap-1">
         <div className="flex items-end gap-3">
           <span className="w-6" aria-hidden="true" />
-          <DigitCell
-            value={topTens}
-            original={startTens}
-            onClick={submitted ? undefined : decrementTens}
-            label="Take one ten from the tens column"
-            showMarkSlot
-          />
-          <DigitCell
-            value={topOnes}
-            original={startOnes}
-            onClick={submitted ? undefined : borrowTen}
-            label="Bring ten ones into the ones column"
-            showMarkSlot
-          />
+          <DigitCell value={topTens} original={startTens} showMark />
+          <DigitCell value={topOnes} original={startOnes} showMark />
         </div>
 
         <div className="flex items-center gap-3">
           <span className="w-6 text-center text-h1 text-ink-muted">&minus;</span>
-          <DigitCell value={bottomTens} original={bottomTens} />
-          <DigitCell value={bottomOnes} original={bottomOnes} />
+          <DigitCell value={tensOf(problem.subtrahend)} original={tensOf(problem.subtrahend)} />
+          <DigitCell value={onesOf(problem.subtrahend)} original={onesOf(problem.subtrahend)} />
         </div>
 
         <div className="my-3 ml-9 h-0.5 w-36 rounded-full bg-violet-200" />
@@ -149,12 +192,15 @@ export function SubtractionCanvas({
               key={place}
               type="button"
               onClick={() => {
-                if (!submitted) setActivePlace(place);
+                setActivePlace(place);
               }}
-              aria-label={`Answer for the ${place} column`}
+              disabled={step !== "answer"}
+              aria-label={`Answer for the ${place}`}
               className={cx(
-                "clay-interactive flex h-16 w-14 items-center justify-center rounded-md text-h1 shadow-clay-1 active:translate-y-px",
-                activePlace === place ? "bg-violet-100 text-violet-600" : "bg-surface text-ink",
+                "clay-interactive flex h-16 w-14 items-center justify-center rounded-md text-h1 tabular-nums shadow-clay-1 active:translate-y-px disabled:opacity-60",
+                step === "answer" && activePlace === place
+                  ? "bg-violet-100 text-violet-600 ring-2 ring-violet-300"
+                  : "bg-surface text-ink",
               )}
             >
               {results[place] ?? ""}
@@ -163,8 +209,24 @@ export function SubtractionCanvas({
         </div>
       </div>
 
-      {activePlace !== null ? (
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+      {step === "setup" ? (
+        <div>
+          <div className="space-y-2">
+            <AdjustRow
+              label="Give the ones 10 more"
+              applied={gaveTenOnes}
+              onToggle={toggleTenOnes}
+            />
+            <AdjustRow label="Take 1 from the tens" applied={tookOneTen} onToggle={toggleOneTen} />
+          </div>
+          <p className="mt-3 text-center text-caption text-ink-muted">
+            Tap again to undo. You can skip both.
+          </p>
+        </div>
+      ) : null}
+
+      {step === "answer" ? (
+        <div className="flex flex-wrap justify-center gap-2">
           {digits.map((digit) => (
             <button
               key={digit}
@@ -172,7 +234,7 @@ export function SubtractionCanvas({
               onClick={() => {
                 chooseDigit(digit);
               }}
-              className="clay-interactive flex h-12 w-12 items-center justify-center rounded-sm bg-surface text-h2 text-ink shadow-clay-1 hover:bg-violet-50 active:translate-y-px"
+              className="clay-interactive flex size-14 items-center justify-center rounded-md bg-surface text-h2 text-ink tabular-nums shadow-clay-1 hover:bg-violet-50 active:translate-y-px"
             >
               {digit}
             </button>
@@ -182,11 +244,14 @@ export function SubtractionCanvas({
 
       <button
         type="button"
-        onClick={submit}
-        disabled={answer === null || submitted}
-        className="clay-interactive mt-8 flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-400 to-violet-500 px-6 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
+        onClick={advance}
+        disabled={ctaDisabled}
+        className="clay-interactive mt-6 flex h-14 w-full items-center justify-center rounded-full bg-linear-to-b from-violet-400 to-violet-500 pr-2 pl-6 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed disabled:pointer-events-none disabled:opacity-45"
       >
-        {submitted ? "Answer recorded" : "Done"}
+        <span className="flex-1 text-center">{ctaLabel}</span>
+        <span className="flex size-10 items-center justify-center rounded-full bg-surface text-violet-500">
+          <ClayIcon glyph={ArrowRightIcon} size="sm" weight="bold" />
+        </span>
       </button>
     </div>
   );

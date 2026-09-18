@@ -60,7 +60,6 @@ export default function PlayPage() {
       </header>
 
       <section className="mb-5 rounded-xl bg-surface p-5 shadow-clay-2">
-        <p className="mb-5 text-body font-bold text-ink">Work this one out.</p>
         <SubtractionCanvas problem={problem} onComplete={setTrace} />
       </section>
 
