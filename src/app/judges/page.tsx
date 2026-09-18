@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
 import { InstrumentSection } from "@/components/app/instrument";
 import { HOOK_MARKS, HookOpener } from "@/components/judges/hook-opener";
+import { ThreeLearners } from "@/components/judges/three-learners";
 import { useTimeline } from "@/lib/use-timeline";
 import { useRunStore } from "@/store/run-store";
 
@@ -42,10 +43,15 @@ export default function JudgesPage() {
         Start the case
       </button>
 
-      <InstrumentSection title="Then play it your own way">
-        <p className="text-small text-ink-soft">
-          Regroup correctly throughout and no boss appears. Take the smaller digit from the bigger
-          in each column and a different rule wakes up. The same engine decides every time.
+      <InstrumentSection title="Same engine, three learners">
+        <p className="mb-3 text-small text-ink-soft">
+          Three learners answer the same problems, each following a different rule. Nothing here is
+          scripted: the page runs the real diagnosis on their steps as it loads.
+        </p>
+        <ThreeLearners />
+        <p className="mt-3 text-small text-ink-soft">
+          Play it yourself: regroup correctly and no boss appears; take the smaller digit from the
+          bigger and Flip Flop wakes instead.
         </p>
       </InstrumentSection>
 
