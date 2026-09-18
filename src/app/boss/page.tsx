@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect } from "react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import labBackdrop from "@/assets/clay/lab-backdrop.webp";
@@ -11,40 +11,56 @@ import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
 import { RuleArt } from "@/components/app/rule-glyph";
 import { PredictBoss } from "@/components/boss/predict-boss";
+import { REVEAL_BEATS, RuleReplay } from "@/components/boss/rule-replay";
 import { ClayIcon } from "@/components/clay/clay-icon";
 import { ClayTag } from "@/components/clay";
+import { solveByColumns } from "@/engine/math/truth";
 import { runRule } from "@/engine/rules/interpreter";
 import { useBoss } from "@/lib/use-boss";
+import { useCue } from "@/lib/sound/use-cue";
+import { useTimeline } from "@/lib/use-timeline";
 import { useRunStore } from "@/store/run-store";
 
-const columnWork = (top: number, bottom: number, result: number): string =>
-  top - bottom === result
-    ? `${String(top)} − ${String(bottom)} = ${String(result)}`
-    : `${String(bottom)} − ${String(top)} = ${String(result)}`;
+const REVEAL_MARKS = [350, 800, 1250, 1650];
 
 export default function BossPage() {
   const boss = useBoss();
+  const cue = useCue();
   const prediction = useRunStore((state) => state.prediction);
   const recordPrediction = useRunStore((state) => state.recordPrediction);
   const completeStages = useRunStore((state) => state.completeStages);
   const guidedCase = useRunStore((state) => state.guidedCase);
   const discoverRule = useRunStore((state) => state.discoverRule);
   const discoverInduced = useRunStore((state) => state.discoverInduced);
+  const beat = useTimeline(boss !== null, REVEAL_MARKS);
 
   useEffect(() => {
     if (boss === null) return;
     if (boss.card.id === "induced") discoverInduced(boss.rule.name);
     else discoverRule(boss.card.id);
   }, [boss, discoverRule, discoverInduced]);
-  const evidence = boss?.traces.at(-1);
-  const mirror =
-    boss !== null && evidence !== undefined ? runRule(boss.rule, evidence.problem) : null;
+
+  useEffect(() => {
+    if (beat === REVEAL_BEATS.glitch) cue("boss");
+  }, [beat, cue]);
+
+  const telling =
+    boss === null
+      ? undefined
+      : ([...boss.traces]
+          .reverse()
+          .find(
+            (trace) =>
+              runRule(boss.rule, trace.problem).answer === trace.finalAnswer &&
+              trace.finalAnswer !== solveByColumns(trace.problem).answer,
+          ) ?? boss.traces.at(-1));
   const explained =
     boss === null
       ? 0
       : boss.traces.filter(
           (trace) => runRule(boss.rule, trace.problem).answer === trace.finalAnswer,
         ).length;
+  const settled = beat >= REVEAL_BEATS.settled;
 
   return (
     <AppShell>
@@ -57,10 +73,10 @@ export default function BossPage() {
           className="object-cover object-bottom"
           priority
         />
-        {boss === null ? null : boss.card.id === "free-ten" ? (
+        {boss === null || beat < REVEAL_BEATS.embodied ? null : boss.card.id === "free-ten" ? (
           <Image
             src={bossIdle}
-            alt="The rule GLITCH found, standing up as a character"
+            alt="Free Ten, gripping its rod so it cannot come apart"
             width={66}
             height={200}
             className="animate-clay-pop absolute bottom-2 left-1/2 -translate-x-1/2"
@@ -85,60 +101,52 @@ export default function BossPage() {
           <NoBossYet />
         ) : (
           <>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-small font-bold text-coral-700">A strange rule woke up</p>
-                <h1 className="mt-1 text-h1 text-ink">{boss.card.name}</h1>
+            {settled ? (
+              <div className="animate-clay-pop space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-small font-bold text-coral-700">A strange rule woke up</p>
+                    <h1 className="mt-1 text-h1 text-ink">{boss.card.name}</h1>
+                  </div>
+                  <ClayTag tone="coral">Stage 4</ClayTag>
+                </div>
+                <p className="text-small text-ink-soft">
+                  {boss.card.hint}. I found this rule hiding in your steps.{" "}
+                  {explained === boss.traces.length
+                    ? "It explains every one of your answers."
+                    : `It explains ${String(explained)} of your ${String(boss.traces.length)} answers.`}
+                </p>
               </div>
-              <ClayTag tone="coral">Stage 4</ClayTag>
-            </div>
-            <p className="text-small text-ink-soft">
-              I found a rule hiding in your steps.{" "}
-              {explained === boss.traces.length
-                ? "It explains every one of your answers."
-                : `It explains ${String(explained)} of your ${String(boss.traces.length)} answers.`}
-            </p>
-
-            {mirror === null || evidence === undefined ? null : (
-              <section className="rounded-xl bg-coral-100 p-5">
-                <p className="text-caption font-bold tracking-widest text-coral-700 uppercase">
-                  This boss learned your rule
-                </p>
-                <p className="mt-2 font-mono text-h2 text-ink tabular-nums">
-                  {evidence.problem.minuend} &minus; {evidence.problem.subtrahend} &rarr;{" "}
-                  {mirror.answer}
-                </p>
-                <p className="mt-2 text-small text-ink-soft">
-                  In the ones it did{" "}
-                  {columnWork(mirror.onesTop, evidence.problem.subtrahend % 10, mirror.onesResult)}.
-                  In the tens it did{" "}
-                  {columnWork(
-                    mirror.tensTop,
-                    Math.floor(evidence.problem.subtrahend / 10),
-                    mirror.tensResult,
-                  )}
-                  .
-                </p>
-              </section>
+            ) : (
+              <p className="text-body font-bold text-violet-600" aria-live="polite">
+                Something in your steps looks strange&hellip;
+              </p>
             )}
 
-            <PredictBoss
-              rule={boss.rule}
-              seen={boss.traces.map((trace) => trace.problem)}
-              onPredicted={(problem, predicted, bossAnswer) => {
-                recordPrediction({ problem, predicted, bossAnswer });
-                completeStages(["boss"]);
-              }}
-            />
+            {telling === undefined ? null : (
+              <RuleReplay problem={telling.problem} rule={boss.rule} beat={beat} />
+            )}
 
-            {prediction === null ? null : <PrimaryCta href="/forge">Trap the boss</PrimaryCta>}
-            {guidedCase ? (
-              <Link
-                href="/lab"
-                className="block rounded-md bg-surface p-4 text-center text-small font-bold text-violet-600 shadow-clay-1"
-              >
-                Why did GLITCH choose this boss? See the lab
-              </Link>
+            {settled ? (
+              <>
+                <PredictBoss
+                  rule={boss.rule}
+                  seen={boss.traces.map((trace) => trace.problem)}
+                  onPredicted={(problem, predicted, bossAnswer) => {
+                    recordPrediction({ problem, predicted, bossAnswer });
+                    completeStages(["boss"]);
+                  }}
+                />
+                {prediction === null ? null : <PrimaryCta href="/forge">Trap the boss</PrimaryCta>}
+                {guidedCase ? (
+                  <Link
+                    href="/lab"
+                    className="block rounded-md bg-surface p-4 text-center text-small font-bold text-violet-600 shadow-clay-1"
+                  >
+                    Why did GLITCH choose this boss? See the lab
+                  </Link>
+                ) : null}
+              </>
             ) : null}
           </>
         )}
