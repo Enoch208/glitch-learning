@@ -3,17 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
+import { motion } from "motion/react";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
-import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import labBackdrop from "@/assets/clay/lab-backdrop.webp";
 import { AppShell } from "@/components/app/app-shell";
 import { NoBossYet } from "@/components/app/no-boss-yet";
 import { PrimaryCta } from "@/components/app/primary-cta";
 import { RuleArt } from "@/components/app/rule-glyph";
+import { BossWake } from "@/components/boss/boss-wake";
 import { PredictBoss } from "@/components/boss/predict-boss";
 import { REVEAL_BEATS, RuleReplay } from "@/components/boss/rule-replay";
 import { ClayIcon } from "@/components/clay/clay-icon";
-import { ClayTag } from "@/components/clay";
 import { solveByColumns } from "@/engine/math/truth";
 import { runRule } from "@/engine/rules/interpreter";
 import { useBoss } from "@/lib/use-boss";
@@ -21,7 +21,7 @@ import { useCue } from "@/lib/sound/use-cue";
 import { useTimeline } from "@/lib/use-timeline";
 import { useRunStore } from "@/store/run-store";
 
-const REVEAL_MARKS = [350, 800, 1250, 1650];
+const REVEAL_MARKS = [400, 1200, 2000, 2600];
 
 export default function BossPage() {
   const boss = useBoss();
@@ -73,19 +73,17 @@ export default function BossPage() {
           className="object-cover object-bottom"
           priority
         />
-        {boss === null || beat < REVEAL_BEATS.embodied ? null : boss.card.id === "free-ten" ? (
-          <Image
-            src={bossIdle}
-            alt="Free Ten, gripping its rod so it cannot come apart"
-            width={66}
-            height={200}
-            className="animate-clay-pop absolute bottom-2 left-1/2 -translate-x-1/2"
-            priority
-          />
-        ) : (
-          <div className="animate-clay-pop absolute bottom-12 left-1/2 -translate-x-1/2">
+        {boss === null ? null : boss.card.id === "free-ten" ? (
+          <BossWake beat={beat} />
+        ) : beat < REVEAL_BEATS.embodied ? null : (
+          <motion.div
+            initial={{ y: 40, scale: 0.7, opacity: 0 }}
+            animate={{ y: 0, scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 240, damping: 16 }}
+            className="absolute bottom-12 left-1/2 -translate-x-1/2"
+          >
             <RuleArt name={boss.card.glyph} size="lg" />
-          </div>
+          </motion.div>
         )}
         <Link
           href="/run"
@@ -102,24 +100,26 @@ export default function BossPage() {
         ) : (
           <>
             {settled ? (
-              <div className="animate-clay-pop space-y-2">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-small font-bold text-coral-700">A strange rule woke up</p>
-                    <h1 className="mt-1 text-h1 text-ink">{boss.card.name}</h1>
-                  </div>
-                  <ClayTag tone="coral">Stage 4</ClayTag>
-                </div>
-                <p className="text-small text-ink-soft">
-                  {boss.card.hint}. I found this rule hiding in your steps.{" "}
+              <div className="space-y-2 text-center">
+                <p className="text-caption font-bold tracking-widest text-coral-700 uppercase">
+                  A rule woke up
+                </p>
+                <h1 className="text-display text-ink">{boss.card.name}</h1>
+                <p className="text-body font-bold text-ink-soft">{boss.card.hint}.</p>
+                <p className="text-small text-ink-muted">
+                  I found this hiding in your steps.{" "}
                   {explained === boss.traces.length
-                    ? "It explains every one of your answers."
-                    : `It explains ${String(explained)} of your ${String(boss.traces.length)} answers.`}
+                    ? "It matches every answer you gave."
+                    : `It matches ${String(explained)} of your ${String(boss.traces.length)} answers.`}
                 </p>
               </div>
             ) : (
-              <p className="text-body font-bold text-violet-600" aria-live="polite">
-                Something in your steps looks strange&hellip;
+              <p className="text-center text-body font-bold text-violet-600" aria-live="polite">
+                {beat < REVEAL_BEATS.glitch
+                  ? "Watch the pieces\u2026"
+                  : beat < REVEAL_BEATS.embodied
+                    ? "That cannot be the same number."
+                    : "The stuck ten is the rule."}
               </p>
             )}
 

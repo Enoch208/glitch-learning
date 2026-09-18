@@ -11,7 +11,7 @@ export const REVEAL_BEATS = { acted: 1, glitch: 2, embodied: 3, settled: 4 } as 
 
 function caption(problem: SubtractionProblem, value: number, tensKept: boolean) {
   if (value !== problem.minuend && tensKept) {
-    return `Ten ones appeared, but no ten left the tens. ${String(problem.minuend)} became ${String(value)}.`;
+    return "Ten ones appeared. The tens never paid.";
   }
   if (value !== problem.minuend) {
     return `The pieces no longer add up to ${String(problem.minuend)}.`;
@@ -34,36 +34,48 @@ export function RuleReplay({
   const acted = beat >= REVEAL_BEATS.acted;
   const glitching = beat === REVEAL_BEATS.glitch;
   const value = run.tensTop * 10 + run.onesTop;
-  const valueChanged = value !== problem.minuend;
+  const startValue = problem.minuend;
+  const valueChanged = value !== startValue;
   const tensKept = run.tensTop === startTens;
+  const showRule = acted;
+  const tens = showRule ? run.tensTop : startTens;
+  const ones = showRule ? run.onesTop : startOnes;
+  const worth = tens * 10 + ones;
 
   return (
     <section className="rounded-xl bg-coral-100 p-4">
       <p className="text-caption font-bold tracking-widest text-coral-700 uppercase">
-        This boss learned your rule
+        {beat >= REVEAL_BEATS.embodied ? "This boss learned your rule" : "Watch the steps"}
       </p>
       <p className="mt-2 font-mono text-h2 text-ink tabular-nums">
-        {problem.minuend} &minus; {problem.subtrahend} &rarr;{" "}
-        {beat >= REVEAL_BEATS.glitch ? run.answer : "…"}
+        {problem.minuend} &minus; {problem.subtrahend}
+        {beat >= REVEAL_BEATS.glitch ? ` \u2192 ${String(run.answer)}` : ""}
       </p>
       <PlaceValueTray
-        tens={acted ? run.tensTop : startTens}
-        ones={acted ? run.onesTop : startOnes}
+        tens={tens}
+        ones={ones}
         startOnes={startOnes}
-        tenBroken={run.tensTop < startTens}
+        tenBroken={showRule && run.tensTop < startTens}
         glitching={glitching && valueChanged}
+        hideWorth
         className="mt-3 bg-surface"
       />
+      <p
+        className={cx(
+          "mt-3 text-center font-mono text-h2 tabular-nums",
+          glitching && valueChanged ? "glitch-fringe text-coral-700" : "text-ink",
+          worth !== startValue ? "text-coral-700" : "",
+        )}
+        aria-live="polite"
+      >
+        {String(tens)} {tens === 1 ? "ten" : "tens"} + {String(ones)} {ones === 1 ? "one" : "ones"}{" "}
+        = {String(worth)}
+      </p>
       {!valueChanged && beat >= REVEAL_BEATS.glitch ? (
         <FlippedOnes problem={problem} glitching={glitching} className="mt-2" />
       ) : null}
       {beat >= REVEAL_BEATS.glitch ? (
-        <p
-          className={cx(
-            "mt-2 text-small font-bold text-coral-700",
-            glitching && valueChanged ? "glitch-fringe" : "",
-          )}
-        >
+        <p className="mt-2 text-center text-small font-bold text-coral-700">
           {caption(problem, value, tensKept)}
         </p>
       ) : null}
