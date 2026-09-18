@@ -11,4 +11,4 @@
 - **Only Free Ten has a boss character.** Other rules appear as their rule piece.
 - **Sound is minimal.** Five short synthesised cues, no music and no recorded audio.
 - **One device.** Progress is stored in the browser and does not follow the learner.
-- **The base ten canvas at `/canvas` is a separate demonstration** of regrouping by composition, not part of the run.
+- **The pieces follow the digits, not the other way round.** In a run the tens rods and ones cubes show what each step does to the number, but they cannot be dragged. Free dragging and regrouping by composition live in the separate demonstration at `/canvas`.
