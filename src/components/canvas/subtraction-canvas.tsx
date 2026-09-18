@@ -115,8 +115,9 @@ export function SubtractionCanvas({
 
   return (
     <div className="flex w-full flex-col items-center">
-      <div className="flex flex-col items-end gap-1">
-        <div className="flex gap-3">
+      <div className="flex flex-col items-center gap-1">
+        <div className="flex items-end gap-3">
+          <span className="w-6" aria-hidden="true" />
           <DigitCell
             value={topTens}
             original={startTens}
@@ -134,14 +135,15 @@ export function SubtractionCanvas({
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="pr-2 text-h1 text-ink-muted">&minus;</span>
+          <span className="w-6 text-center text-h1 text-ink-muted">&minus;</span>
           <DigitCell value={bottomTens} original={bottomTens} />
           <DigitCell value={bottomOnes} original={bottomOnes} />
         </div>
 
-        <div className="my-3 h-0.5 w-44 rounded-full bg-violet-200" />
+        <div className="my-3 ml-9 h-0.5 w-36 rounded-full bg-violet-200" />
 
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          <span className="w-6" aria-hidden="true" />
           {(["tens", "ones"] as const).map((place) => (
             <button
               key={place}

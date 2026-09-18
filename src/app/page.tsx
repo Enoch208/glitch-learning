@@ -9,8 +9,8 @@ import { ClayIcon } from "@/components/clay/clay-icon";
 
 import { cx } from "@/lib/cx";
 import { journeyStages, ruleLibrary } from "@/lib/journey";
-import { toneAccents, toneSurfaces } from "@/components/clay/tones";
-import { RuleGlyph } from "@/components/app/rule-glyph";
+import { toneSurfaces } from "@/components/clay/tones";
+import { RuleArt, RuleChip } from "@/components/app/rule-glyph";
 
 const totalStages = journeyStages.length;
 const activeStage = journeyStages.findIndex((stage) => stage.status === "active") + 1;
@@ -73,7 +73,7 @@ export default function HomePage() {
                     className="absolute top-3 right-3 text-ink-muted"
                   />
                 )}
-                <RuleGlyph name={rule.glyph} className={toneAccents[rule.tone]} />
+                <RuleArt name={rule.glyph} size="lg" />
                 <span className="text-small font-bold text-ink">{rule.name}</span>
               </Link>
             </li>
@@ -87,7 +87,7 @@ export default function HomePage() {
           href="/lab"
           className="clay-interactive flex items-center gap-3 rounded-md bg-surface p-3 shadow-clay-1 active:translate-y-px"
         >
-          <RuleGlyph name="stack" className="text-mint-500" />
+          <RuleChip name="stack" tone={toneSurfaces.mint} />
           <span className="flex-1">
             <span className="block text-small font-bold text-ink">Free Ten</span>
             <span className="block text-caption text-ink-muted">

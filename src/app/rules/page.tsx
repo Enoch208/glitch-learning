@@ -1,7 +1,6 @@
-import { LockSimpleIcon, TargetIcon } from "@phosphor-icons/react/dist/ssr";
 import { AppShell } from "@/components/app/app-shell";
-import { ClayIcon } from "@/components/clay/clay-icon";
 import { cx } from "@/lib/cx";
+import { RuleChip } from "@/components/app/rule-glyph";
 import { ruleLibrary } from "@/lib/journey";
 import { toneSurfaces } from "@/components/clay/tones";
 
@@ -25,18 +24,7 @@ export default function RulesPage() {
               rule.unlocked ? "" : "opacity-70",
             )}
           >
-            <span
-              className={cx(
-                "flex size-12 shrink-0 items-center justify-center rounded-sm",
-                toneSurfaces[rule.tone],
-              )}
-            >
-              <ClayIcon
-                glyph={rule.unlocked ? TargetIcon : LockSimpleIcon}
-                size="md"
-                className="text-ink-soft"
-              />
-            </span>
+            <RuleChip name={rule.glyph} tone={toneSurfaces[rule.tone]} />
             <span className="flex-1">
               <span className="block text-small font-bold text-ink">{rule.name}</span>
               <span className="block text-caption text-ink-muted">{rule.hint}</span>

@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon, ClockIcon, SkullIcon, StackIcon } from "@phosphor-icons/react/dist/ssr";
-import blobMint from "@/assets/clay/blob-mint.webp";
-import blobPeach from "@/assets/clay/blob-peach.webp";
+import labBackdrop from "@/assets/clay/lab-backdrop.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import { AppShell } from "@/components/app/app-shell";
 import { PrimaryCta } from "@/components/app/primary-cta";
@@ -20,21 +19,21 @@ const meta: { glyph: ClayGlyph; label: string }[] = [
 export default function LabPage() {
   return (
     <AppShell>
-      <div className="relative h-72 overflow-hidden bg-linear-to-b from-sky-100 to-mint-100">
-        <Image src={blobMint} alt="" width={120} height={120} className="absolute -top-6 -left-8" />
+      <div className="relative h-72 overflow-hidden bg-sky-100">
         <Image
-          src={blobPeach}
+          src={labBackdrop}
           alt=""
-          width={104}
-          height={104}
-          className="absolute top-10 -right-6"
+          fill
+          sizes="24rem"
+          className="object-cover object-bottom"
+          priority
         />
         <Image
           src={bossIdle}
           alt="The Free Ten boss, holding its rod so it cannot come apart"
           width={73}
           height={220}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2"
+          className="absolute bottom-2 left-1/2 -translate-x-1/2"
           priority
         />
         <Link
