@@ -19,6 +19,7 @@ A math game that works out the rule behind a child's wrong answers, turns that r
 ## Contents
 
 - [About](#about)
+  - [Learning science](#learning-science)
 - [Features](#features)
 - [How a run works](#how-a-run-works)
 - [Screenshots](#screenshots)
@@ -35,7 +36,15 @@ Most learning software tells a learner that they are wrong. GLITCH asks a differ
 
 A child answers 52 − 28 = 34. Their recorded steps show they made 12 ones but never took the ten they used from the tens. GLITCH does not just mark 34 wrong. It asks what rule would make those steps make sense, checks that rule against more problems, and turns that rule into a boss called Free Ten. The child predicts what the boss will say, builds a problem it gets wrong, explains why it broke, and then solves a new problem on their own. Only then is the rule defeated.
 
+Traditional adaptive learning changes the next question. GLITCH changes the learner's relationship with the mistake.
+
 The first domain is two-digit subtraction with regrouping, for learners aged 8 to 11.
+
+### Learning science
+
+Children's subtraction errors are often systematic rules, not random slips. Brown and Burton's work on procedural "bugs" (_Diagnostic models for procedural bugs in basic mathematical skills_, Cognitive Science, 1978) showed that many wrong answers come from a consistent, slightly broken procedure, and argued for explaining why an error happens instead of only marking it. VanLehn's _Mind Bugs_ (MIT Press, 1990) catalogued the same families GLITCH models, including taking the smaller digit from the larger (Flip Flop) and regrouping without taking one from the tens (Free Ten).
+
+GLITCH takes that old insight and turns the learner's rule into something they can see, predict, challenge and disprove. The model proposes what the learner might believe; the learner's own steps and deterministic math decide whether that belief is real.
 
 ## Features
 
