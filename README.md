@@ -79,7 +79,7 @@ A learner who regroups correctly throughout never gets a boss.
 | Wrong-answer lookup    | 420 / 500     | 0          | 80                   | 4                        |
 | Answers only, no steps | 498 / 500     | 2          | 0                    | 2                        |
 
-These learners follow the rules the model already knows, so the scores show the machinery works, not accuracy with real children. Details in [EVAL.md](EVAL.md).
+These learners follow the rules the model already knows, so the scores show the machinery works, not accuracy with real children.
 
 The model path is measured live with `pnpm eval:model` (gpt-5.5, 10 rule-finding runs, 9 labelled explanations):
 
@@ -181,7 +181,5 @@ tests/            unit tests mirroring the engine
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md): the engine, the rule language and the model boundary
-- [EVAL.md](EVAL.md): how the evaluation is run and how to read it
-- [KNOWN_LIMITS.md](KNOWN_LIMITS.md): what GLITCH does not do yet
 - [SAFETY.md](SAFETY.md): design choices that protect children
 - [THIRD_PARTY.md](THIRD_PARTY.md): dependencies and their licences
