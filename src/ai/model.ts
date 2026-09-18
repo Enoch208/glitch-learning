@@ -1,15 +1,24 @@
-import type { BetaMessage } from "@anthropic-ai/sdk/resources/beta/messages/messages";
+import type { Response } from "openai/resources/responses/responses";
 
-export const MODEL = "claude-opus-5";
-export const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+export const MODEL = "gpt-5.5";
 
 export type ModelOutput = { stopReason: string | null; text: string | null };
 
-export function outputOf(message: BetaMessage): ModelOutput {
-  const text = message.content.find((block) => block.type === "text");
+export function outputOf(response: Response): ModelOutput {
+  const refused = response.output.some(
+    (item) => item.type === "message" && item.content.some((part) => part.type === "refusal"),
+  );
+  if (refused) return { stopReason: "refusal", text: null };
+  if (response.status === "incomplete") {
+    return {
+      stopReason:
+        response.incomplete_details?.reason === "max_output_tokens" ? "max_tokens" : "incomplete",
+      text: null,
+    };
+  }
   return {
-    stopReason: message.stop_reason,
-    text: text?.type === "text" ? text.text : null,
+    stopReason: "end_turn",
+    text: response.output_text === "" ? null : response.output_text,
   };
 }
 
@@ -20,4 +29,4 @@ export function readJson(output: ModelOutput): unknown {
   return JSON.parse(output.text);
 }
 
-export const hasModelKey = (): boolean => (process.env.ANTHROPIC_API_KEY ?? "").length > 0;
+export const hasModelKey = (): boolean => (process.env.OPENAI_API_KEY ?? "").length > 0;

@@ -1,0 +1,192 @@
+{
+  "generatedAt": "2026-09-18T20:24:19.482Z",
+  "model": "gpt-5.5",
+  "reasoningEffort": "low",
+  "runsPerScenario": 5,
+  "summary": {
+    "inductionRuns": 10,
+    "inductionParsed": 10,
+    "proposalsTotal": 19,
+    "proposalsRejected": 0,
+    "runsWithVerifiedRule": 10,
+    "runsRecoveringTheRule": 10,
+    "inductionLatencyMs": {
+      "p50": 5543,
+      "p95": 9656
+    },
+    "explanationSamples": 9,
+    "explanationAgreement": 8,
+    "explanationLatencyMs": {
+      "p50": 2719,
+      "p95": 5729
+    },
+    "fallbackWorks": true
+  },
+  "induction": [
+    {
+      "scenario": "Rule not in the library (writes zero when the ones are too small)",
+      "runs": [
+        {
+          "latencyMs": 5543,
+          "parsed": true,
+          "proposals": 1,
+          "rejected": 0,
+          "verified": 1,
+          "bestName": "Zero Hard Ones",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 9323,
+          "parsed": true,
+          "proposals": 3,
+          "rejected": 0,
+          "verified": 3,
+          "bestName": "No Borrow Zero",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 6122,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "Zero Hard Ones",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 5375,
+          "parsed": true,
+          "proposals": 1,
+          "rejected": 0,
+          "verified": 1,
+          "bestName": "No Borrow Zero",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 9656,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "No Borrow Zero",
+          "bestHeldOutAgreement": 1
+        }
+      ]
+    },
+    {
+      "scenario": "Free Ten",
+      "runs": [
+        {
+          "latencyMs": 7311,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "Add Ten Only",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 3974,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "Add Ten Ones",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 3912,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "Add Ten Ones",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 3811,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "Add Ten Ones",
+          "bestHeldOutAgreement": 1
+        },
+        {
+          "latencyMs": 4752,
+          "parsed": true,
+          "proposals": 2,
+          "rejected": 0,
+          "verified": 2,
+          "bestName": "Add Ten No Borrow",
+          "bestHeldOutAgreement": 1
+        }
+      ]
+    }
+  ],
+  "explanation": [
+    {
+      "text": "the boss made 12 ones but forgot to take one ten away so the tens should be 4 not 5",
+      "latencyMs": 3205,
+      "conceptsPresent": ["moves-not-creates", "tens-decrease"],
+      "contradiction": false,
+      "agrees": true
+    },
+    {
+      "text": "you can borrow ten ones and still keep all your tens",
+      "latencyMs": 2719,
+      "conceptsPresent": [],
+      "contradiction": true,
+      "agrees": true
+    },
+    {
+      "text": "one ten is the same as ten ones, and 52 is still 52 after you regroup it",
+      "latencyMs": 1909,
+      "conceptsPresent": ["ten-is-ten-ones", "total-same"],
+      "contradiction": false,
+      "agrees": true
+    },
+    {
+      "text": "I gave the ones ten more but I forgot the ten had to come from somewhere",
+      "latencyMs": 2739,
+      "conceptsPresent": ["moves-not-creates"],
+      "contradiction": false,
+      "agrees": false
+    },
+    {
+      "text": "when you break a ten you get ten ones, the number doesnt get bigger",
+      "latencyMs": 3565,
+      "conceptsPresent": ["ten-is-ten-ones", "moves-not-creates", "total-same"],
+      "contradiction": false,
+      "agrees": true
+    },
+    {
+      "text": "the answer is 24",
+      "latencyMs": 1824,
+      "conceptsPresent": [],
+      "contradiction": false,
+      "agrees": true
+    },
+    {
+      "text": "i dont know",
+      "latencyMs": 1191,
+      "conceptsPresent": [],
+      "contradiction": false,
+      "agrees": true
+    },
+    {
+      "text": "regrouping just moves the value around so the total stays the same",
+      "latencyMs": 2417,
+      "conceptsPresent": ["moves-not-creates", "total-same"],
+      "contradiction": false,
+      "agrees": true
+    },
+    {
+      "text": "52 is 5 tens and 2 ones. if you take a ten you have 4 tens and 12 ones",
+      "latencyMs": 5729,
+      "conceptsPresent": ["ten-is-ten-ones", "tens-decrease"],
+      "contradiction": false,
+      "agrees": true
+    }
+  ]
+}

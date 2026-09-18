@@ -1,7 +1,7 @@
-import type Anthropic from "@anthropic-ai/sdk";
+import type OpenAI from "openai";
 import { z } from "zod";
 import { conceptStatements, requiredConceptIds } from "@/engine/learning/explanation";
-import { FALLBACK_BETA, MODEL, outputOf, readJson, type ModelOutput } from "./model";
+import { MODEL, outputOf, readJson, type ModelOutput } from "./model";
 
 export type ConceptJudgement = { conceptsPresent: string[]; contradiction: boolean };
 
@@ -24,18 +24,15 @@ Set contradiction to true only if the explanation says that the wrong rule is ri
 
 Judge only the ideas. Do not grade spelling, grammar or length. Return only the ids from the list.`;
 
-export const explanationFormat = {
-  type: "json_schema",
-  schema: {
-    type: "object",
-    properties: {
-      conceptsPresent: { type: "array", items: { type: "string", enum: requiredConceptIds } },
-      contradiction: { type: "boolean" },
-    },
-    required: ["conceptsPresent", "contradiction"],
-    additionalProperties: false,
+export const explanationSchema = {
+  type: "object",
+  properties: {
+    conceptsPresent: { type: "array", items: { type: "string", enum: requiredConceptIds } },
+    contradiction: { type: "boolean" },
   },
-} as const;
+  required: ["conceptsPresent", "contradiction"],
+  additionalProperties: false,
+};
 
 export function conceptsFromOutput(output: ModelOutput): ConceptJudgement {
   const parsed = judgementSchema.parse(readJson(output));
@@ -46,23 +43,24 @@ export function conceptsFromOutput(output: ModelOutput): ConceptJudgement {
 }
 
 export async function judgeExplanation(
-  client: Anthropic,
+  client: OpenAI,
   ruleName: string,
   explanation: string,
 ): Promise<ConceptJudgement> {
-  const message = await client.beta.messages.create({
+  const response = await client.responses.create({
     model: MODEL,
-    max_tokens: 4000,
-    betas: [FALLBACK_BETA],
-    fallbacks: "default",
-    output_config: { effort: "low", format: explanationFormat },
-    system: EXPLANATION_SYSTEM,
-    messages: [
-      {
-        role: "user",
-        content: `The wrong rule was called ${ruleName}. The child wrote:\n\n${explanation}`,
+    instructions: EXPLANATION_SYSTEM,
+    input: `The wrong rule was called ${ruleName}. The child wrote:\n\n${explanation}`,
+    reasoning: { effort: "low" },
+    max_output_tokens: 4000,
+    text: {
+      format: {
+        type: "json_schema",
+        name: "explanation_judgement",
+        schema: explanationSchema,
+        strict: true,
       },
-    ],
+    },
   });
-  return conceptsFromOutput(outputOf(message));
+  return conceptsFromOutput(outputOf(response));
 }

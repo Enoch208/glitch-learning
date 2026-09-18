@@ -1,9 +1,9 @@
-import type Anthropic from "@anthropic-ai/sdk";
+import type OpenAI from "openai";
 import { z } from "zod";
 import type { Observation } from "@/engine/learner/observation";
 import { MAX_PROPOSALS, type RuleProposer } from "@/engine/rules/induction";
 import { correctRule } from "@/engine/rules/known-rules";
-import { FALLBACK_BETA, MODEL, outputOf, readJson, type ModelOutput } from "./model";
+import { MODEL, outputOf, readJson, type ModelOutput } from "./model";
 
 const exampleProgram = JSON.stringify({
   onesTop: correctRule.onesTop,
@@ -32,7 +32,7 @@ Expressions are JSON objects, one of:
 {"op":"if","condition":expr,"then":expr,"else":expr}
 lessThan and equal give 1 or 0; if takes then when the condition is not 0.
 
-Write each rule's "program" as JSON text of an object with exactly onesTop, tensTop, onesResult and tensResult. Never write JavaScript, Python, prose algorithms or operations outside this list.
+Give each rule a "name" of two to four plain words a child could read, in Title Case, with no underscores. Write each rule's "program" as JSON text of an object with exactly onesTop, tensTop, onesResult and tensResult. Never write JavaScript, Python, prose algorithms or operations outside this list.
 
 Correct regrouping, for reference only:
 ${exampleProgram}`;
@@ -41,25 +41,22 @@ const wrapperSchema = z.object({
   candidates: z.array(z.object({ name: z.string(), program: z.string() })),
 });
 
-export const inductionFormat = {
-  type: "json_schema",
-  schema: {
-    type: "object",
-    properties: {
-      candidates: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: { name: { type: "string" }, program: { type: "string" } },
-          required: ["name", "program"],
-          additionalProperties: false,
-        },
+export const inductionSchema = {
+  type: "object",
+  properties: {
+    candidates: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { name: { type: "string" }, program: { type: "string" } },
+        required: ["name", "program"],
+        additionalProperties: false,
       },
     },
-    required: ["candidates"],
-    additionalProperties: false,
   },
-} as const;
+  required: ["candidates"],
+  additionalProperties: false,
+};
 
 const describe = (observation: Observation): string =>
   `Problem ${String(observation.problem.minuend)} - ${String(observation.problem.subtrahend)}: ` +
@@ -88,17 +85,30 @@ export function proposalsFromOutput(output: ModelOutput): unknown[] {
   });
 }
 
-export function claudeRuleProposer(client: Anthropic): RuleProposer {
+export type ProposerSettings = { model: string; effort: "low" | "medium" | "high" };
+
+export const defaultProposerSettings: ProposerSettings = { model: MODEL, effort: "low" };
+
+export function openAiRuleProposer(
+  client: OpenAI,
+  settings: ProposerSettings = defaultProposerSettings,
+): RuleProposer {
   return async (request) => {
-    const message = await client.beta.messages.create({
-      model: MODEL,
-      max_tokens: 16000,
-      betas: [FALLBACK_BETA],
-      fallbacks: "default",
-      output_config: { effort: "low", format: inductionFormat },
-      system: INDUCTION_SYSTEM,
-      messages: [{ role: "user", content: buildInductionPrompt(request.observations) }],
+    const response = await client.responses.create({
+      model: settings.model,
+      instructions: INDUCTION_SYSTEM,
+      input: buildInductionPrompt(request.observations),
+      reasoning: { effort: settings.effort },
+      max_output_tokens: 16000,
+      text: {
+        format: {
+          type: "json_schema",
+          name: "rule_candidates",
+          schema: inductionSchema,
+          strict: true,
+        },
+      },
     });
-    return proposalsFromOutput(outputOf(message));
+    return proposalsFromOutput(outputOf(response));
   };
 }

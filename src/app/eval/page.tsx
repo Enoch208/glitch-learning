@@ -1,4 +1,5 @@
 import results from "../../../evals/results/diagnosis.json";
+import model from "../../../evals/results/model.json";
 import { AppShell } from "@/components/app/app-shell";
 import { InstrumentSection, Reading } from "@/components/app/instrument";
 import type { StrategyReport } from "@/engine/eval/diagnose";
@@ -18,7 +19,8 @@ const strategyNames: Partial<Record<string, string>> = {
 const knownLimits = [
   "The synthetic learners follow the same four rules the model knows, so these numbers show the machinery works, not how accurate it is with real children.",
   "Free Ten and correct regrouping give the same answer when no regrouping is needed. GLITCH will not wake a boss until it has seen two problems where they disagree.",
-  "Finding new rules and reading written explanations use a language model when one is configured. That path has not been measured live yet, so none of the numbers above include it.",
+  "The model is slower than intended: finding a new rule takes several seconds, not the 2.5 second goal.",
+  "The model eval is small: ten rule-finding runs over two rules and nine hand-labelled explanations.",
 ];
 
 export default function EvalPage() {
@@ -96,6 +98,36 @@ export default function EvalPage() {
           label="Choosing the next question, P95"
           value={`${String(results.diagnosticSelectionMs.p95)} ms`}
           note="budget 150 ms"
+        />
+      </InstrumentSection>
+
+      <InstrumentSection title="Live model">
+        <Reading label="Model" value={model.model} note="low reasoning effort" />
+        <Reading
+          label="Runs that found a verified rule"
+          value={`${String(model.summary.runsWithVerifiedRule)} of ${String(model.summary.inductionRuns)}`}
+        />
+        <Reading
+          label="Matched the true rule on unseen problems"
+          value={`${String(model.summary.runsRecoveringTheRule)} of ${String(model.summary.inductionRuns)}`}
+          note="90 problems per run"
+        />
+        <Reading
+          label="Proposed programs rejected"
+          value={`${String(model.summary.proposalsRejected)} of ${String(model.summary.proposalsTotal)}`}
+        />
+        <Reading
+          label="Explanations judged as labelled"
+          value={`${String(model.summary.explanationAgreement)} of ${String(model.summary.explanationSamples)}`}
+        />
+        <Reading
+          label="Finding a rule, P50 / P95"
+          value={`${(model.summary.inductionLatencyMs.p50 / 1000).toFixed(1)} / ${(model.summary.inductionLatencyMs.p95 / 1000).toFixed(1)} s`}
+          note="goal 2.5 s"
+        />
+        <Reading
+          label="Reading an explanation, P50 / P95"
+          value={`${(model.summary.explanationLatencyMs.p50 / 1000).toFixed(1)} / ${(model.summary.explanationLatencyMs.p95 / 1000).toFixed(1)} s`}
         />
       </InstrumentSection>
 

@@ -43,7 +43,7 @@ The first domain is two-digit subtraction with regrouping, for learners aged 8 t
 - **Treats a wrong answer as a hypothesis.** It holds several candidate rules at once and asks the problem that best tells them apart.
 - **Turns the rule into a boss.** The boss copies the learner's own work, and the learner predicts its next answer.
 - **Makes winning take proof.** A counterexample, an explanation and an unseen problem solved alone.
-- **Finds rules nobody wrote down.** When the known rules don't fit, Claude proposes new ones in a closed rule language, and a rule becomes a boss only if deterministic code confirms it.
+- **Finds rules nobody wrote down.** When the known rules don't fit, an OpenAI model proposes new ones in a closed rule language, and a rule becomes a boss only if deterministic code confirms it.
 - **Never lets a model decide what is true.** Arithmetic, rule execution, counterexamples and the victory condition are all deterministic.
 - **Hands off to a tutor.** Every run ends with notes built from recorded evidence.
 - **Built for children.** No chat, no ads, no accounts, no correctness shown mid-diagnosis, WCAG AA contrast, full keyboard use, reduced motion and a mute button on every screen.
@@ -81,6 +81,18 @@ A learner who regroups correctly throughout never gets a boss.
 
 These learners follow the rules the model already knows, so the scores show the machinery works, not accuracy with real children. Details in [EVAL.md](EVAL.md).
 
+The model path is measured live with `pnpm eval:model` (gpt-5.5, 10 rule-finding runs, 9 labelled explanations):
+
+| Model check                                                 | Result                  |
+| ----------------------------------------------------------- | ----------------------- |
+| Rule-finding output that parsed                             | 10 of 10 runs           |
+| Proposed programs rejected by the validator                 | 0 of 19                 |
+| Runs that found a rule passing verification                 | 10 of 10                |
+| Runs whose rule matched the true rule on 90 unseen problems | 10 of 10                |
+| Explanations judged as labelled                             | 8 of 9                  |
+| Rule-finding latency                                        | 5.5 s median, 9.7 s P95 |
+| Explanation latency                                         | 2.7 s median, 5.7 s P95 |
+
 | Reliability check                | Result                  |
 | -------------------------------- | ----------------------- |
 | Arithmetic failures              | 0 across 4995 problems  |
@@ -91,15 +103,15 @@ These learners follow the rules the model already knows, so the scores show the 
 
 ## Tech stack
 
-| Area       | Choice                                             |
-| ---------- | -------------------------------------------------- |
-| Framework  | Next.js 16 (App Router), React 19                  |
-| Language   | TypeScript 5.9, strict                             |
-| Styling    | Tailwind CSS 4 with a token system                 |
-| State      | Zustand, persisted on the device                   |
-| Validation | Zod                                                |
-| Model      | Claude through the Anthropic SDK, server side only |
-| Testing    | Vitest                                             |
+| Area       | Choice                                                    |
+| ---------- | --------------------------------------------------------- |
+| Framework  | Next.js 16 (App Router), React 19                         |
+| Language   | TypeScript 5.9, strict                                    |
+| Styling    | Tailwind CSS 4 with a token system                        |
+| State      | Zustand, persisted on the device                          |
+| Validation | Zod                                                       |
+| Model      | OpenAI `gpt-5.5` through the OpenAI SDK, server side only |
+| Testing    | Vitest                                                    |
 
 ## Getting started
 
@@ -121,36 +133,36 @@ Open [http://localhost:3000](http://localhost:3000). The app is designed for pho
 
 ### Environment variables
 
-The app runs fully without any configuration. To let Claude propose new rules and read written explanations, create `.env.local`:
+The app runs fully without any configuration. To let the model propose new rules and read written explanations, create `.env.local`:
 
 ```bash
-ANTHROPIC_API_KEY=your-key
+OPENAI_API_KEY=your-key
 ```
 
 The key is read on the server only and never sent to the browser.
 
 ## Scripts
 
-| Command                 | Description                                           |
-| ----------------------- | ----------------------------------------------------- |
-| `pnpm dev`              | Start the development server                          |
-| `pnpm build`            | Build for production                                  |
-| `pnpm start`            | Serve the production build                            |
-| `pnpm test`             | Run the unit tests                                    |
-| `pnpm test <path>`      | Run one test file or folder                           |
-| `pnpm test -t "<name>"` | Run tests whose name matches                          |
-| `pnpm eval`             | Regenerate `evals/results/diagnosis.json`             |
-| `pnpm eval:model`       | Check the live model path (needs `ANTHROPIC_API_KEY`) |
-| `pnpm lint`             | Lint, including the no-comments rule                  |
-| `pnpm typecheck`        | Type-check                                            |
-| `pnpm format`           | Format with Prettier                                  |
+| Command                 | Description                                        |
+| ----------------------- | -------------------------------------------------- |
+| `pnpm dev`              | Start the development server                       |
+| `pnpm build`            | Build for production                               |
+| `pnpm start`            | Serve the production build                         |
+| `pnpm test`             | Run the unit tests                                 |
+| `pnpm test <path>`      | Run one test file or folder                        |
+| `pnpm test -t "<name>"` | Run tests whose name matches                       |
+| `pnpm eval`             | Regenerate `evals/results/diagnosis.json`          |
+| `pnpm eval:model`       | Check the live model path (needs `OPENAI_API_KEY`) |
+| `pnpm lint`             | Lint, including the no-comments rule               |
+| `pnpm typecheck`        | Type-check                                         |
+| `pnpm format`           | Format with Prettier                               |
 
 ## Project structure
 
 ```
 src/
   app/            screens and the two API routes
-  ai/             Claude calls, server side only
+  ai/             model calls, server side only
   components/     app shell, canvas, clay primitives
   events/         trace schema shared by canvas and engine
   engine/

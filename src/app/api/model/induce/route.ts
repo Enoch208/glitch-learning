@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { z } from "zod";
-import { claudeRuleProposer } from "@/ai/induce-rule";
+import { openAiRuleProposer } from "@/ai/induce-rule";
 import { hasModelKey } from "@/ai/model";
 import { induceRules, type RuleProposer } from "@/engine/rules/induction";
 
@@ -24,7 +24,7 @@ export async function POST(request: Request): Promise<Response> {
   const body = bodySchema.safeParse(await request.json().catch(() => null));
   if (!body.success) return Response.json({ error: "invalid observations" }, { status: 400 });
 
-  const proposer = hasModelKey() ? claudeRuleProposer(new Anthropic()) : noModel;
+  const proposer = hasModelKey() ? openAiRuleProposer(new OpenAI()) : noModel;
   const started = performance.now();
   const result = await induceRules(body.data.observations, proposer);
 

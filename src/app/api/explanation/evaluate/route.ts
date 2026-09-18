@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { z } from "zod";
 import { judgeExplanation } from "@/ai/evaluate-explanation";
 import { hasModelKey } from "@/ai/model";
@@ -17,7 +17,7 @@ export async function POST(request: Request): Promise<Response> {
 
   const started = performance.now();
   try {
-    const judgement = await judgeExplanation(new Anthropic(), body.data.ruleName, body.data.text);
+    const judgement = await judgeExplanation(new OpenAI(), body.data.ruleName, body.data.text);
     return Response.json({
       source: "model",
       latencyMs: Math.round(performance.now() - started),

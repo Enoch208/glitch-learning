@@ -4,7 +4,7 @@ GLITCH is a single Next.js app. The engine under `src/engine` is plain TypeScrip
 
 ## The boundary
 
-Claude proposes candidate rules and judges which ideas a written explanation contains. It never decides the correct answer, whether a counterexample is valid, whether a transfer problem was solved, or whether the learner has won.
+An OpenAI model (`gpt-5.5`, low reasoning effort, Responses API with strict structured outputs) proposes candidate rules and judges which ideas a written explanation contains. It never decides the correct answer, whether a counterexample is valid, whether a transfer problem was solved, or whether the learner has won.
 
 ## Model layer
 
