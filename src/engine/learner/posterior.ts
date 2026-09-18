@@ -3,9 +3,10 @@ import type { RuleProgram } from "@/engine/rules/ast";
 import { correctRule, flipFlopRule, freeTenRule } from "@/engine/rules/known-rules";
 import type { Observation } from "./observation";
 
-export type Hypothesis = { id: string; rule: RuleProgram; slip: number };
+export type Hypothesis = { id: string; rule: RuleProgram; slip: number; misconception: boolean };
 
 export type DiagnosticConfig = {
+  evidence: "trace" | "answer";
   bossLeading: number;
   bossLead: number;
   minDiscriminating: number;
@@ -13,6 +14,7 @@ export type DiagnosticConfig = {
 };
 
 export const defaultDiagnosticConfig: DiagnosticConfig = {
+  evidence: "trace",
   bossLeading: 0.75,
   bossLead: 0.2,
   minDiscriminating: 2,
@@ -22,10 +24,10 @@ export const defaultDiagnosticConfig: DiagnosticConfig = {
 export const OTHER_ANSWERS = 99;
 
 export const hypotheses: Hypothesis[] = [
-  { id: "correct", rule: correctRule, slip: 0.05 },
-  { id: "free-ten", rule: freeTenRule, slip: 0.05 },
-  { id: "flip-flop", rule: flipFlopRule, slip: 0.05 },
-  { id: "slip", rule: correctRule, slip: 0.4 },
+  { id: "correct", rule: correctRule, slip: 0.05, misconception: false },
+  { id: "free-ten", rule: freeTenRule, slip: 0.05, misconception: true },
+  { id: "flip-flop", rule: flipFlopRule, slip: 0.05, misconception: true },
+  { id: "slip", rule: correctRule, slip: 0.4, misconception: false },
 ];
 
 export const uniformPrior = (): number[] => hypotheses.map(() => 1 / hypotheses.length);
@@ -39,8 +41,11 @@ function likelihood(hypothesis: Hypothesis, observation: Observation, config: Di
   const step = (predicted: number, observed: number) =>
     predicted === observed ? 1 - stepNoise : stepNoise;
 
+  const answerFit = answerLikelihood(hypothesis, run.answer, observation.answer);
+  if (config.evidence === "answer") return answerFit;
+
   return (
-    answerLikelihood(hypothesis, run.answer, observation.answer) *
+    answerFit *
     step(run.onesTop, observation.steps.onesTop) *
     step(run.tensTop, observation.steps.tensTop)
   );
@@ -82,11 +87,12 @@ export function leadingHypothesis(posterior: number[]): Hypothesis {
 export function bossReady(observations: Observation[], config: DiagnosticConfig): boolean {
   const [leader, runnerUp] = ranked(posteriorAfter(observations, uniformPrior(), config));
   if (leader === undefined || runnerUp === undefined) return false;
+  if (!leader.hypothesis.misconception) return false;
 
   const discriminating = observations.filter(
     (observation) =>
       runRule(leader.hypothesis.rule, observation.problem).answer !==
-      runRule(runnerUp.hypothesis.rule, observation.problem).answer,
+      runRule(correctRule, observation.problem).answer,
   ).length;
 
   return (

@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-09-18T16:50:45.851Z",
+  "options": {
+    "learnersPerRule": 125,
+    "maxQuestions": 6,
+    "seed": 2026
+  },
+  "reports": [
+    {
+      "strategy": "glitch",
+      "learners": 500,
+      "correct": 500,
+      "wrongBoss": 0,
+      "falseAccusations": 0,
+      "missed": 0,
+      "medianQuestionsToBoss": 2
+    },
+    {
+      "strategy": "random-question",
+      "learners": 500,
+      "correct": 442,
+      "wrongBoss": 1,
+      "falseAccusations": 1,
+      "missed": 57,
+      "medianQuestionsToBoss": 4
+    },
+    {
+      "strategy": "answer-lookup",
+      "learners": 500,
+      "correct": 420,
+      "wrongBoss": 0,
+      "falseAccusations": 0,
+      "missed": 80,
+      "medianQuestionsToBoss": 4
+    },
+    {
+      "strategy": "answer-only",
+      "learners": 500,
+      "correct": 498,
+      "wrongBoss": 2,
+      "falseAccusations": 2,
+      "missed": 0,
+      "medianQuestionsToBoss": 2
+    }
+  ],
+  "diagnosticSelectionMs": {
+    "p50": 0.023,
+    "p95": 0.027,
+    "samples": 400
+  }
+}

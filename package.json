@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "eval": "vitest run --config vitest.eval.config.ts"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",

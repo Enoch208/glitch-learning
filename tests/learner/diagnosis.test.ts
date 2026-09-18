@@ -92,6 +92,17 @@ describe("boss creation gate", () => {
     expect(bossReady(easy, defaultDiagnosticConfig)).toBe(false);
   });
 
+  test("a learner answering correctly on regrouping problems is never given a boss", () => {
+    const correctWork = [
+      { problem: { minuend: 52, subtrahend: 28 }, answer: 24, steps: { onesTop: 12, tensTop: 4 } },
+      { problem: { minuend: 61, subtrahend: 27 }, answer: 34, steps: { onesTop: 11, tensTop: 5 } },
+      { problem: { minuend: 73, subtrahend: 38 }, answer: 35, steps: { onesTop: 13, tensTop: 6 } },
+      { problem: { minuend: 84, subtrahend: 19 }, answer: 65, steps: { onesTop: 14, tensTop: 7 } },
+    ];
+
+    expect(bossReady(correctWork, defaultDiagnosticConfig)).toBe(false);
+  });
+
   test("the prior gives every hypothesis a chance", () => {
     expect(uniformPrior().every((p) => p > 0)).toBe(true);
   });
