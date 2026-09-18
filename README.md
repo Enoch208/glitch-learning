@@ -33,6 +33,8 @@ _Two minutes: a wrong answer, the rule hiding inside it, the boss it becomes, an
 - [Every wrong rule has a behaviour](#every-wrong-rule-has-a-behaviour)
 - [How a run works](#how-a-run-works)
 - [AI proposes, code decides](#ai-proposes-code-decides)
+  - [The rule language](#the-rule-language)
+  - [How a rule is found](#how-a-rule-is-found)
 - [Progression and mastery](#progression-and-mastery)
 - [For tutors](#for-tutors)
 - [Learning science](#learning-science)
@@ -112,6 +114,28 @@ The boss reveal is earned, not scripted. GLITCH replays the child's own step on 
 
 A boss appears only when one rule explains the learner on at least two problems where that rule and correct regrouping disagree. A learner who regroups correctly throughout never gets a boss.
 
+```mermaid
+flowchart TD
+    S["1 · Solve<br/>work a problem with tens and ones"] --> C["2 · Clue<br/>every step recorded"]
+    C --> D{"3 · Test the pattern<br/>does one rule explain<br/>every step?"}
+    D -- "not yet, ≤ 6 problems" --> Q["next problem chosen where<br/>the candidate rules disagree most"] --> S
+    D -- "no rule after 6" --> N["No boss.<br/>Nothing to fight."]
+    D -- "known rules fit nothing" --> M["model proposes new rules<br/>code verifies them"] --> D
+    D -- "one rule clears the gate" --> B["4 · Boss<br/>replays your own step, wakes up"]
+    B --> P["Predict what the boss will say"]
+    P --> F["5 · Forge<br/>build a problem the boss gets wrong"]
+    F -- "boss and truth agree" --> F
+    F -- "boss ≠ truth" --> W["6 · Why<br/>explain it in your own words"]
+    W -- "weak: a hint" --> W
+    W -- "accepted" --> T["7 · Prove it<br/>unseen problem, no hints"]
+    T -- "wrong answer or wrong steps" --> R["walk-through of the ten moving"] --> T2["one more try"] --> V
+    T -- "answer and steps right" --> V["Victory<br/>rule defeated, Glitch Book updated"]
+    V --> H["Tutor handoff<br/>evidence sheet"]
+    N --> H
+```
+
+Every arrow is a guarded transition in the stage machine. A stage cannot be completed without the evidence it needs, and an independent checker confirms this on 60,000 random attempts in the evaluation.
+
 ## AI proposes, code decides
 
 The model has exactly two jobs:
@@ -122,6 +146,96 @@ The model has exactly two jobs:
 Everything else is deterministic TypeScript: the arithmetic truth engine, the rule interpreter, the posterior over hypotheses, question selection, counterexample validation, the stage machine and the victory condition. The model never determines the correct answer, whether a counterexample is valid, whether a transfer passed, or whether a child "understands". Every model call has a deterministic fallback, so a run finishes even with the provider down.
 
 `/lab` shows this live during a session: the observed steps, the candidate rules, how sure the engine is, and why it asked the next question. Full detail in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+```mermaid
+flowchart LR
+    subgraph child["The child"]
+        canvas["Tens-and-ones canvas"]
+    end
+    subgraph code["Deterministic code decides"]
+        trace["Step trace"]
+        truth["Truth engine"]
+        interp["Rule interpreter"]
+        post["Posterior over rules<br/>+ information gain"]
+        gate{"Boss gate<br/>leading ≥ 0.75<br/>lead ≥ 0.20<br/>2 telling problems"}
+        cx["Counterexample engine"]
+        sm["Stage machine"]
+    end
+    subgraph model["The model proposes"]
+        induce["Propose ≤ 3 candidate rules<br/>as programs in the rule language"]
+        readx["Read a written explanation<br/>→ which key ideas it contains"]
+    end
+    canvas --> trace --> post
+    truth --> post
+    interp --> post
+    post --> gate
+    post -- "no known rule fits" --> induce
+    induce -- "schema-validate · execute · score" --> interp
+    gate -- "boss" --> cx
+    cx --> sm
+    readx -- "ideas found" --> sm
+    sm -- "accepted / not yet" --> canvas
+```
+
+The model's output never reaches the child without passing through code first: a proposed rule is executed by the interpreter, an explanation's ideas are checked against the required set, and the stage machine decides what happens next.
+
+### The rule language
+
+A boss is a program in a tiny closed language: four inputs (`topOnes`, `topTens`, `bottomOnes`, `bottomTens`), two rewritten digits (`onesTop`, `tensTop`), two column results, and a handful of operations (`add`, `subtract`, `absoluteDifference`, `lessThan`, `equal`, `addTen`, `decrement`, `if`). Programs are capped at depth 8 and 60 nodes and validated with a strict schema, so the model can propose a rule but cannot smuggle in arbitrary code.
+
+This is Free Ten, exactly as the engine runs it:
+
+```json
+{
+  "name": "Free Ten",
+  "onesTop": {
+    "op": "if",
+    "condition": {
+      "op": "lessThan",
+      "left": { "op": "var", "name": "topOnes" },
+      "right": { "op": "var", "name": "bottomOnes" }
+    },
+    "then": { "op": "addTen", "value": { "op": "var", "name": "topOnes" } },
+    "else": { "op": "var", "name": "topOnes" }
+  },
+  "tensTop": { "op": "var", "name": "topTens" },
+  "onesResult": {
+    "op": "subtract",
+    "left": { "op": "var", "name": "onesTop" },
+    "right": { "op": "var", "name": "bottomOnes" }
+  },
+  "tensResult": {
+    "op": "subtract",
+    "left": { "op": "var", "name": "tensTop" },
+    "right": { "op": "var", "name": "bottomTens" }
+  }
+}
+```
+
+Correct regrouping differs in one line: `tensTop` becomes `decrement(topTens)` when the ones were too small. That one line is the whole misconception, and it is why the same interpreter can replay the boss's rule and the real math side by side in the Forge.
+
+### How a rule is found
+
+```mermaid
+sequenceDiagram
+    participant L as Learner
+    participant E as Engine
+    participant M as Model
+    L->>E: 52 − 28: ones get 10 more, tens stay, answer 34
+    E->>E: update posterior over {correct, Free Ten, Flip Flop, slip}
+    E->>E: pick the next problem by expected information gain
+    E-->>L: 31 − 15
+    L->>E: ones get 10 more, tens stay, answer 26
+    E->>E: Free Ten leads by ≥ 0.20 on 2 telling problems → gate passes
+    E-->>L: Free Ten wakes up
+    Note over E,M: only when no known rule fits:
+    E->>M: serialized trace, ask for ≤ 3 candidate programs
+    M-->>E: candidate programs
+    E->>E: validate · reject unsupported ops · execute on observed and unseen problems · score
+    E-->>L: a verified new rule becomes the boss, or a discriminating question is asked instead
+```
+
+One counterexample engine serves three callers: it validates the problem the learner forges, it generates the Forge hints when they are stuck, and it produces the evaluation fixtures. One engine, three uses, so the hint can never disagree with the check.
 
 ## Progression and mastery
 
