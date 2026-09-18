@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import avatarLearner from "@/assets/clay/avatar-learner.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
 import { AppShell } from "@/components/app/app-shell";
 import { SectionHeading } from "@/components/app/section-heading";
@@ -19,8 +20,8 @@ export default function HomePage() {
   return (
     <AppShell className="px-5 pt-8">
       <header className="mb-6 flex items-center gap-3">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-300 to-violet-500 text-h2 font-bold text-surface ring-2 ring-surface shadow-clay-1">
-          L
+        <span className="flex size-12 shrink-0 items-end justify-center overflow-hidden rounded-full bg-violet-100 shadow-clay-1 ring-2 ring-surface">
+          <Image src={avatarLearner} alt="" width={43} height={56} className="translate-y-1" />
         </span>
         <div>
           <p className="text-small text-ink-muted">Hi, Learner 01</p>

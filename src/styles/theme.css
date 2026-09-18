@@ -102,6 +102,10 @@
   }
 }
 
+@utility pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
 @utility clay-interactive {
   transition-property: transform, box-shadow, background-color, background-image, color;
   transition-timing-function: var(--ease-clay);
