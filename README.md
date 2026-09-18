@@ -33,7 +33,7 @@ A math game that works out the rule behind a child's wrong answers, turns that r
 
 Most learning software tells a learner that they are wrong. GLITCH asks a different question: _what rule would make this wrong answer look right?_
 
-A child who answers 52 − 28 = 34 is not guessing. They borrowed a ten to make 12 ones and never took it from the tens. GLITCH watches every step, works out which rule explains them, and turns that rule into a boss called Free Ten. The child predicts what the boss will say, builds a problem it gets wrong, explains why it broke, and then solves a new problem on their own. Only then is the rule defeated.
+A child answers 52 − 28 = 34. Their recorded steps show they made 12 ones but never took the ten they used from the tens. GLITCH does not just mark 34 wrong. It asks what rule would make those steps make sense, checks that rule against more problems, and turns that rule into a boss called Free Ten. The child predicts what the boss will say, builds a problem it gets wrong, explains why it broke, and then solves a new problem on their own. Only then is the rule defeated.
 
 The first domain is two-digit subtraction with regrouping, for learners aged 8 to 11.
 
@@ -50,15 +50,15 @@ The first domain is two-digit subtraction with regrouping, for learners aged 8 t
 
 ## How a run works
 
-| Stage          | What happens                                                                                         |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
-| 1. Encounter   | The learner works a subtraction problem, step by step.                                               |
-| 2. Observation | GLITCH records each step, not only the answer.                                                       |
-| 3. Diagnostic  | Follow-up problems are chosen by expected information gain over the candidate rules.                 |
-| 4. Boss        | A rule that clears the evidence gate becomes the boss, copies the learner, and is predicted by them. |
-| 5. Forge       | The learner builds a problem, digit by digit, that the boss gets wrong.                              |
-| 6. Explain     | The learner says why the boss broke, in their own words or by choosing ideas.                        |
-| 7. Transfer    | The learner solves a new problem the rule would still get wrong.                                     |
+| Stage          | What happens                                                                                                                                       |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Encounter   | The learner works a subtraction problem, step by step.                                                                                             |
+| 2. Observation | GLITCH records each step, not only the answer.                                                                                                     |
+| 3. Diagnostic  | Follow-up problems are chosen where the candidate rules' answers disagree most (expected information gain); the posterior then uses the steps too. |
+| 4. Boss        | A rule that clears the evidence gate becomes the boss, copies the learner, and is predicted by them.                                               |
+| 5. Forge       | The learner builds a problem, digit by digit, that the boss gets wrong.                                                                            |
+| 6. Explain     | The learner says why the boss broke, in their own words or by choosing ideas. A weak explanation gets a hint, never a pass.                        |
+| 7. Transfer    | The learner solves a new problem the rule would still get wrong, with the right answer and the right regrouping steps.                             |
 
 A learner who regroups correctly throughout never gets a boss.
 

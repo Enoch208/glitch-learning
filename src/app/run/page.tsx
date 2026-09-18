@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeftIcon, ClockIcon, MagnifyingGlassIcon, SwordIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  ArrowLeftIcon,
+  ClockIcon,
+  MagnifyingGlassIcon,
+  SwordIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import labBackdrop from "@/assets/clay/lab-backdrop.webp";
 import bossDefeated from "@/assets/clay/boss-free-ten-defeated.webp";
 import bossIdle from "@/assets/clay/boss-free-ten-idle.webp";
