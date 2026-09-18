@@ -9,6 +9,7 @@ import { DigitStepper } from "@/components/forge/digit-stepper";
 import { RuleBroken } from "@/components/forge/rule-broken";
 import { evaluateForge, forgeHints, type ForgeEvaluation } from "@/engine/counterexample/search";
 import { useBoss } from "@/lib/use-boss";
+import { useCue } from "@/lib/sound/use-cue";
 import { useRunStore } from "@/store/run-store";
 
 type Digits = { topTens: number; topOnes: number; bottomTens: number; bottomOnes: number };
@@ -17,6 +18,7 @@ const HINT_AFTER = 2;
 
 export default function ForgePage() {
   const boss = useBoss();
+  const cue = useCue();
   const recordForge = useRunStore((state) => state.recordForge);
   const completeStages = useRunStore((state) => state.completeStages);
   const [digits, setDigits] = useState<Digits>({
@@ -64,7 +66,9 @@ export default function ForgePage() {
         attempts: misses + 1,
       });
       completeStages(["forge"]);
+      cue("break");
     } else {
+      cue("tap");
       setMisses((count) => count + 1);
     }
   };

@@ -15,10 +15,12 @@ import type { ReasoningTrace } from "@/events/trace";
 import { cx } from "@/lib/cx";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useRunStore } from "@/store/run-store";
+import { useCue } from "@/lib/sound/use-cue";
 
 export default function PlayPage() {
   const hydrated = useHydrated();
   const router = useRouter();
+  const cue = useCue();
   const storedTraces = useRunStore((state) => state.traces);
   const recordTrace = useRunStore((state) => state.recordTrace);
   const completeStages = useRunStore((state) => state.completeStages);
@@ -78,7 +80,16 @@ export default function PlayPage() {
         <div className="space-y-5">
           <TraceReview trace={reviewing} />
           {outcome.kind === "boss" ? (
-            <PrimaryCta href="/boss">Meet the rule</PrimaryCta>
+            <button
+              type="button"
+              onClick={() => {
+                cue("boss");
+                router.push("/boss");
+              }}
+              className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised active:translate-y-px"
+            >
+              Meet the rule
+            </button>
           ) : outcome.kind === "no-rule-found" ? (
             <>
               <section className="rounded-xl bg-mint-100 p-5 text-center">
@@ -105,6 +116,7 @@ export default function PlayPage() {
           <button
             type="button"
             onClick={() => {
+              cue("boss");
               router.push("/boss");
             }}
             className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-400 to-violet-500 font-bold text-surface shadow-clay-raised"

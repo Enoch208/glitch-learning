@@ -6,6 +6,7 @@ import { solveByColumns, type SubtractionProblem } from "@/engine/math/truth";
 import type { RuleProgram } from "@/engine/rules/ast";
 import { runRule } from "@/engine/rules/interpreter";
 import { cx } from "@/lib/cx";
+import { useCue } from "@/lib/sound/use-cue";
 
 const PREDICT_PICK = 6;
 
@@ -18,6 +19,7 @@ export function PredictBoss({
   seen: SubtractionProblem[];
   onPredicted: (problem: SubtractionProblem, predicted: number, bossAnswer: number) => void;
 }) {
+  const cue = useCue();
   const [picked, setPicked] = useState<number | null>(null);
 
   const round = useMemo(() => {
@@ -35,6 +37,7 @@ export function PredictBoss({
   const choose = (value: number) => {
     if (picked !== null) return;
     setPicked(value);
+    cue("tap");
     onPredicted(round.problem, value, round.bossAnswer);
   };
 

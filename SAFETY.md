@@ -10,4 +10,5 @@ GLITCH is built for children aged 8 to 11.
 - **Confidence stays out of the learner's view.** Probabilities and information-gain figures appear only on the `/lab` inspector.
 - **A learner with no misconception gets no boss.** The evaluation counts any boss given to such a learner as a false accusation.
 - **Kind endings.** A learner who does not pass the transfer problem is told "Not yet" and gets notes for a tutor, not a failure screen.
+- **Sound is never needed.** Every cue marks something already shown in text, cues stay short and quiet, and the mute button sits on the tab bar on every screen.
 - **Accessibility.** Controls have text labels and large touch targets, the Forge uses steppers instead of dragging, and motion follows the device's reduced-motion setting.

@@ -10,12 +10,14 @@ import { transferPassed, transferProblem } from "@/engine/game/transfer";
 import { solveByColumns } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
 import { useBoss } from "@/lib/use-boss";
+import { useCue } from "@/lib/sound/use-cue";
 import { useRunStore } from "@/store/run-store";
 
 type Status = "working" | "passed" | "remediate" | "not-yet";
 
 export default function TransferPage() {
   const boss = useBoss();
+  const cue = useCue();
   const prediction = useRunStore((state) => state.prediction);
   const forge = useRunStore((state) => state.forge);
   const recordTransfer = useRunStore((state) => state.recordTransfer);
@@ -47,6 +49,7 @@ export default function TransferPage() {
     recordTransfer({ problem, answer: trace.finalAnswer, passed });
     if (passed) {
       completeStages(["transfer"]);
+      cue("victory");
       setStatus("passed");
     } else {
       setStatus(attempt === 1 ? "remediate" : "not-yet");

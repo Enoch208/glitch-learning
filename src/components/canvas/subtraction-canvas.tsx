@@ -7,6 +7,7 @@ import { createTraceRecorder } from "@/engine/trace/recorder";
 import type { SubtractionProblem } from "@/engine/math/truth";
 import type { ReasoningTrace } from "@/events/trace";
 import { cx } from "@/lib/cx";
+import { useCue } from "@/lib/sound/use-cue";
 
 type Step = "look" | "setup" | "answer" | "done";
 type Place = "ones" | "tens";
@@ -95,6 +96,7 @@ export function SubtractionCanvas({
   problem: SubtractionProblem;
   onComplete?: ((trace: ReasoningTrace) => void) | undefined;
 }) {
+  const cue = useCue();
   const recorder = useRef(createTraceRecorder(problem));
   const [step, setStep] = useState<Step>("look");
   const [gaveTenOnes, setGaveTenOnes] = useState(false);
@@ -116,7 +118,8 @@ export function SubtractionCanvas({
       value: next ? startOnes + 10 : startOnes,
     });
     setGaveTenOnes(next);
-  }, [gaveTenOnes, startOnes]);
+    cue("regroup");
+  }, [gaveTenOnes, startOnes, cue]);
 
   const toggleOneTen = useCallback(() => {
     const next = !tookOneTen;
@@ -126,7 +129,8 @@ export function SubtractionCanvas({
       value: next ? startTens - 1 : startTens,
     });
     setTookOneTen(next);
-  }, [tookOneTen, startTens]);
+    cue("regroup");
+  }, [tookOneTen, startTens, cue]);
 
   const chooseDigit = useCallback(
     (digit: number) => {
@@ -146,6 +150,7 @@ export function SubtractionCanvas({
   }, [results]);
 
   const advance = useCallback(() => {
+    cue("tap");
     if (step === "look") {
       setStep("setup");
       return;
@@ -159,7 +164,7 @@ export function SubtractionCanvas({
       setStep("done");
       onComplete?.(recorder.current.complete(answer));
     }
-  }, [step, answer, onComplete]);
+  }, [step, answer, onComplete, cue]);
 
   const stepNumber = step === "done" ? steps.length : steps.indexOf(step) + 1;
   const ctaLabel = step === "answer" ? "Done" : step === "done" ? "Answer recorded" : "Next";
