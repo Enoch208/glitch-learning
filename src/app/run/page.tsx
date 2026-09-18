@@ -126,7 +126,7 @@ export default function RunPage() {
           </p>
         ) : (
           <PrimaryCta href={nextStage.href}>
-            {completed.length > 0 ? "Continue" : "Start Encounter"}
+            {completed.length > 0 ? "Continue" : "Start solving"}
           </PrimaryCta>
         )}
       </div>

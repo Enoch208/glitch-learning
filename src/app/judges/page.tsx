@@ -6,19 +6,12 @@ import { AppShell } from "@/components/app/app-shell";
 import { InstrumentSection } from "@/components/app/instrument";
 import { useRunStore } from "@/store/run-store";
 
-const script = [
-  "Tap Next, then choose only A: give the ones 10 more.",
-  "Write the answer the columns give you, then Done.",
-  "Do the same on the next problem. A rule wakes up.",
-  "Predict it, break it in the Forge, explain why, then solve one alone.",
-];
-
 export default function JudgesPage() {
   const router = useRouter();
-  const resetRun = useRunStore((state) => state.resetRun);
+  const startGuidedCase = useRunStore((state) => state.startGuidedCase);
 
   const start = () => {
-    resetRun();
+    startGuidedCase();
     router.push("/play");
   };
 
@@ -26,12 +19,12 @@ export default function JudgesPage() {
     <AppShell className="space-y-5 px-5 pt-8">
       <header>
         <p className="font-mono text-caption tracking-widest text-violet-500 uppercase">
-          For judges
+          90 second guided case
         </p>
         <h1 className="mt-2 text-h1 text-ink">Your mistake becomes the boss</h1>
-        <p className="mt-2 text-small text-ink-soft">
-          GLITCH watches how a learner subtracts, works out which rule explains their steps, turns
-          that rule into an opponent, and lets them win only by proving it wrong.
+        <p className="mt-3 text-small text-ink-soft">
+          A learner has a consistent subtraction misconception. Play through their reasoning and see
+          whether GLITCH can uncover it, turn it into a boss, and let the learner beat it.
         </p>
       </header>
 
@@ -40,31 +33,22 @@ export default function JudgesPage() {
         onClick={start}
         className="clay-interactive h-16 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 text-body font-bold text-surface shadow-clay-raised active:translate-y-px"
       >
-        Start the 90 second run
+        Start the case
       </button>
 
-      <InstrumentSection title="Play it as a learner with Free Ten">
-        <ol className="space-y-2">
-          {script.map((step, index) => (
-            <li key={step} className="flex gap-3 text-small text-ink-soft">
-              <span className="font-mono font-bold text-violet-500">{index + 1}</span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-      </InstrumentSection>
-
-      <InstrumentSection title="Try another pattern">
+      <InstrumentSection title="Then play it your own way">
         <p className="text-small text-ink-soft">
-          Skip both regroup choices and take the smaller digit from the bigger in each column. The
-          same engine finds Flip Flop instead. Answer correctly throughout and no boss appears.
+          Regroup correctly throughout and no boss appears. Take the smaller digit from the bigger
+          in each column and a different rule wakes up. The same engine decides every time.
         </p>
       </InstrumentSection>
 
       <InstrumentSection title="Look underneath">
         <div className="flex flex-col gap-2 text-small font-bold text-violet-500">
-          <Link href="/lab">The lab: candidate rules and the next question, live</Link>
-          <Link href="/eval">The evaluation: measured against three baselines</Link>
+          <Link href="/lab">The lab: what GLITCH believes, and why it asks the next question</Link>
+          <Link href="/eval">
+            The evaluation: measured against three baselines and a live model
+          </Link>
         </div>
       </InstrumentSection>
     </AppShell>

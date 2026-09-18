@@ -36,7 +36,7 @@ export default function HomePage() {
         </span>
         <div>
           <p className="text-small text-ink-muted">Hi, Learner 01</p>
-          <h1 className="text-h2 text-ink">Ready to break a rule?</h1>
+          <h1 className="text-h2 text-ink">Ready to catch a glitch?</h1>
         </div>
       </header>
 

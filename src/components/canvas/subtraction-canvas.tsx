@@ -59,12 +59,14 @@ function AdjustRow({
   label,
   applied,
   onToggle,
+  highlighted = false,
 }: {
   letter: string;
   badgeTone: string;
   label: string;
   applied: boolean;
   onToggle: () => void;
+  highlighted?: boolean;
 }) {
   return (
     <button
@@ -80,6 +82,7 @@ function AdjustRow({
         className={cx(
           "flex size-9 shrink-0 items-center justify-center rounded-full text-small font-bold",
           applied ? "bg-violet-500 text-surface" : badgeTone,
+          highlighted && !applied ? "animate-pulse ring-2 ring-violet-300" : "",
         )}
       >
         {applied ? <ClayIcon glyph={CheckIcon} size="sm" weight="bold" /> : letter}
@@ -92,9 +95,11 @@ function AdjustRow({
 export function SubtractionCanvas({
   problem,
   onComplete,
+  guided = false,
 }: {
   problem: SubtractionProblem;
   onComplete?: ((trace: ReasoningTrace) => void) | undefined;
+  guided?: boolean;
 }) {
   const cue = useCue();
   const recorder = useRef(createTraceRecorder(problem));
@@ -244,6 +249,7 @@ export function SubtractionCanvas({
               label="Give the ones 10 more"
               applied={gaveTenOnes}
               onToggle={toggleTenOnes}
+              highlighted={guided}
             />
             <AdjustRow
               letter="B"

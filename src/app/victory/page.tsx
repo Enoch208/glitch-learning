@@ -74,7 +74,7 @@ export default function VictoryPage() {
         </h1>
         <p className="mt-2 text-small text-ink-muted">
           {handoff.defeated
-            ? "You found where it fails, said why, and solved a new one alone."
+            ? "You found the bad rule, broke it, and solved a new one without it."
             : "Your notes below show exactly what comes next."}
         </p>
       </section>

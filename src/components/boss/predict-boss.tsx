@@ -76,7 +76,7 @@ export function PredictBoss({
       {picked === null ? null : (
         <p className="mt-4 text-small text-ink-soft" aria-live="polite">
           {picked === round.bossAnswer
-            ? "Yes. You can think like the boss now."
+            ? "Exactly. You found its rule."
             : `The boss says ${String(round.bossAnswer)}. It follows its rule every time.`}
         </p>
       )}

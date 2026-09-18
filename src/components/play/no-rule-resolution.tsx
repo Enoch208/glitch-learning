@@ -99,7 +99,7 @@ export function NoRuleResolution({ observations }: { observations: Observation[]
           }}
           className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px"
         >
-          Meet the rule
+          See what woke up
         </button>
       </>
     );

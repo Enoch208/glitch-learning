@@ -26,9 +26,16 @@ export default function BossPage() {
   const prediction = useRunStore((state) => state.prediction);
   const recordPrediction = useRunStore((state) => state.recordPrediction);
   const completeStages = useRunStore((state) => state.completeStages);
+  const guidedCase = useRunStore((state) => state.guidedCase);
   const evidence = boss?.traces.at(-1);
   const mirror =
     boss !== null && evidence !== undefined ? runRule(boss.rule, evidence.problem) : null;
+  const explained =
+    boss === null
+      ? 0
+      : boss.traces.filter(
+          (trace) => runRule(boss.rule, trace.problem).answer === trace.finalAnswer,
+        ).length;
 
   return (
     <AppShell>
@@ -71,17 +78,22 @@ export default function BossPage() {
           <>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-small font-bold text-coral-700">A rule woke up</p>
+                <p className="text-small font-bold text-coral-700">A strange rule woke up</p>
                 <h1 className="mt-1 text-h1 text-ink">{boss.card.name}</h1>
               </div>
               <ClayTag tone="coral">Stage 4</ClayTag>
             </div>
-            <p className="text-small text-ink-soft">This rule seems to explain your steps.</p>
+            <p className="text-small text-ink-soft">
+              I found a rule hiding in your steps.{" "}
+              {explained === boss.traces.length
+                ? "It explains every one of your answers."
+                : `It explains ${String(explained)} of your ${String(boss.traces.length)} answers.`}
+            </p>
 
             {mirror === null || evidence === undefined ? null : (
               <section className="rounded-xl bg-coral-100 p-5">
                 <p className="text-caption font-bold tracking-widest text-coral-700 uppercase">
-                  The boss copies you
+                  This boss learned your rule
                 </p>
                 <p className="mt-2 font-mono text-h2 text-ink tabular-nums">
                   {evidence.problem.minuend} &minus; {evidence.problem.subtrahend} &rarr;{" "}
@@ -110,7 +122,15 @@ export default function BossPage() {
               }}
             />
 
-            {prediction === null ? null : <PrimaryCta href="/forge">Break the rule</PrimaryCta>}
+            {prediction === null ? null : <PrimaryCta href="/forge">Trap the boss</PrimaryCta>}
+            {guidedCase ? (
+              <Link
+                href="/lab"
+                className="block rounded-md bg-surface p-4 text-center text-small font-bold text-violet-600 shadow-clay-1"
+              >
+                Why did GLITCH choose this boss? See the lab
+              </Link>
+            ) : null}
           </>
         )}
       </div>

@@ -33,7 +33,7 @@ export default function ExplainPage() {
   if (boss === null) {
     return (
       <AppShell className="px-5 pt-6">
-        <StageHeader title="Explain" stage={6} />
+        <StageHeader title="Why?" stage={6} />
         <NoBossYet />
       </AppShell>
     );
@@ -69,7 +69,7 @@ export default function ExplainPage() {
 
   return (
     <AppShell className="space-y-5 px-5 pt-6">
-      <StageHeader title="Explain" stage={6} />
+      <StageHeader title="Why?" stage={6} />
       <p className="text-body font-bold text-ink">
         {forge === null
           ? "Why does the boss break?"
@@ -136,7 +136,7 @@ export default function ExplainPage() {
               ? "Those ideas are exactly why the rule broke."
               : "Let's see those ideas in action."}
           </section>
-          <PrimaryCta href="/transfer">Try one on your own</PrimaryCta>
+          <PrimaryCta href="/transfer">Prove it</PrimaryCta>
         </>
       ) : (
         <button

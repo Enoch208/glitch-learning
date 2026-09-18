@@ -24,6 +24,7 @@ export default function PlayPage() {
   const storedTraces = useRunStore((state) => state.traces);
   const recordTrace = useRunStore((state) => state.recordTrace);
   const completeStages = useRunStore((state) => state.completeStages);
+  const guidedCase = useRunStore((state) => state.guidedCase);
   const [reviewing, setReviewing] = useState<ReasoningTrace | null>(null);
 
   const traces = useMemo(() => (hydrated ? storedTraces : []), [hydrated, storedTraces]);
@@ -88,7 +89,7 @@ export default function PlayPage() {
               }}
               className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px"
             >
-              Meet the rule
+              See what woke up
             </button>
           ) : outcome.kind === "no-rule-found" ? (
             <NoRuleResolution observations={observations} />
@@ -106,7 +107,9 @@ export default function PlayPage() {
         </div>
       ) : outcome.kind === "boss" ? (
         <section className="rounded-xl bg-surface p-5 text-center shadow-clay-2">
-          <p className="mb-4 text-body font-bold text-ink">GLITCH found a rule in your steps.</p>
+          <p className="mb-4 text-body font-bold text-ink">
+            GLITCH spotted a pattern in your steps.
+          </p>
           <button
             type="button"
             onClick={() => {
@@ -115,7 +118,7 @@ export default function PlayPage() {
             }}
             className="clay-interactive h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised"
           >
-            Meet the rule
+            See what woke up
           </button>
         </section>
       ) : outcome.kind === "no-rule-found" ? (
@@ -126,6 +129,7 @@ export default function PlayPage() {
             key={`${String(problem.minuend)}-${String(problem.subtrahend)}-${String(asked)}`}
             problem={problem}
             onComplete={finish}
+            guided={hydrated && guidedCase}
           />
         </section>
       )}

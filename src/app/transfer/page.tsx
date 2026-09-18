@@ -38,7 +38,7 @@ export default function TransferPage() {
   if (boss === null || problem === null) {
     return (
       <AppShell className="px-5 pt-6">
-        <StageHeader title="On your own" stage={7} />
+        <StageHeader title="Prove it" stage={7} />
         <NoBossYet />
       </AppShell>
     );
@@ -60,7 +60,7 @@ export default function TransferPage() {
 
   return (
     <AppShell className="space-y-5 px-5 pt-6">
-      <StageHeader title="On your own" stage={7} />
+      <StageHeader title="Prove it" stage={7} />
 
       {status === "working" ? (
         <section className="rounded-xl bg-surface p-5 shadow-clay-2">
@@ -73,12 +73,12 @@ export default function TransferPage() {
       ) : status === "passed" ? (
         <>
           <section className="rounded-xl bg-mint-100 p-5 text-center">
-            <p className="text-h2 text-mint-700">{steps.answer}. Exactly right.</p>
+            <p className="text-h2 text-mint-700">{steps.answer}. You fixed the glitch.</p>
             <p className="mt-1 text-small text-ink-soft">
-              The boss would have said something else.
+              No boss, no hints, and the rule never came back.
             </p>
           </section>
-          <PrimaryCta href="/victory">See what you did</PrimaryCta>
+          <PrimaryCta href="/victory">Finish the fight</PrimaryCta>
         </>
       ) : status === "remediate" ? (
         <>

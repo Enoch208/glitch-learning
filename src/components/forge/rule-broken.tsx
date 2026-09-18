@@ -28,7 +28,7 @@ export function RuleBroken({
             <span className="text-h2 text-coral-700 line-through">{bossAnswer}</span>
           </span>
           <span className="rounded-md bg-surface px-3 py-2 text-center">
-            <span className="block text-caption text-ink-muted">Truth</span>
+            <span className="block text-caption text-ink-muted">Math</span>
             <span className="text-h2 text-mint-700">{truthAnswer}</span>
           </span>
         </div>

@@ -88,7 +88,7 @@ export default function ForgePage() {
   return (
     <AppShell className="space-y-5 px-5 pt-6">
       <StageHeader title="Forge" stage={5} />
-      <p className="text-body font-bold text-ink">Build a problem the boss gets wrong.</p>
+      <p className="text-body font-bold text-ink">Build a problem that traps the boss.</p>
 
       <section className="rounded-xl bg-surface p-5 shadow-clay-2">
         <div className="flex items-center justify-center gap-2">
@@ -114,7 +114,7 @@ export default function ForgePage() {
             onClick={test}
             className="clay-interactive mt-6 h-14 w-full rounded-full bg-linear-to-b from-violet-500 to-violet-600 font-bold text-surface shadow-clay-raised active:translate-y-px active:shadow-clay-pressed"
           >
-            Test it on the boss
+            Spring the trap
           </button>
         )}
       </section>
@@ -128,7 +128,7 @@ export default function ForgePage() {
             truthAnswer={result.truthAnswer}
             showCharacter={boss.card.id === "free-ten"}
           />
-          <PrimaryCta href="/explain">Explain why</PrimaryCta>
+          <PrimaryCta href="/explain">Why did it break?</PrimaryCta>
         </>
       ) : (
         <p

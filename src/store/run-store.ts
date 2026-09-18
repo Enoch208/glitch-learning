@@ -19,6 +19,7 @@ type RunData = {
   forge: ForgeRecord | null;
   explanation: ExplanationRecord | null;
   transfers: TransferRecord[];
+  guidedCase: boolean;
   soundOn: boolean;
 };
 
@@ -31,6 +32,7 @@ export type RunState = RunData & {
   recordTransfer: (transfer: TransferRecord) => void;
   completeStages: (ids: string[]) => void;
   resetRun: () => void;
+  startGuidedCase: () => void;
   toggleSound: () => void;
 };
 
@@ -42,6 +44,7 @@ const freshRun: RunData = {
   forge: null,
   explanation: null,
   transfers: [],
+  guidedCase: false,
   soundOn: true,
 };
 
@@ -78,11 +81,14 @@ export const useRunStore = create<RunState>()(
       resetRun: () => {
         set((state) => ({ ...freshRun, soundOn: state.soundOn }));
       },
+      startGuidedCase: () => {
+        set((state) => ({ ...freshRun, guidedCase: true, soundOn: state.soundOn }));
+      },
       toggleSound: () => {
         set((state) => ({ soundOn: !state.soundOn }));
       },
     }),
-    { name: "glitch-run", version: 4, migrate: () => freshRun },
+    { name: "glitch-run", version: 5, migrate: () => freshRun },
   ),
 );
 
